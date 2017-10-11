@@ -5,7 +5,7 @@ class MatrixGraph < Graph
 	attr_accessor :matrix, :indexing
 
 	def initialize(size = nil)
-		@indexing = Indexing.new			# indexing represents
+		@indexing = Indexing.new						# indexing represents
 		if size.nil?
 			size = 0
 		end
@@ -27,8 +27,12 @@ class MatrixGraph < Graph
 		if indexing.add_element(node)
 			arcs = Set.new
 			#TODO: increment the matrix's size only if the matrix has too much nodes compared to its basic size
-			matrix.increment_size
+			if indexing.size > size
+				matrix.increment_size
+			end
 			self.see
+		else
+			raise ArgumentError, "The node has already been added to the graph"
 		end
 	end
 
@@ -44,21 +48,18 @@ class MatrixGraph < Graph
 	#  ██║  ██║██║  ██║╚██████╗
 	#  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
 
+	# OK
 	def add_arc(origin, destination, value = nil)
 		if node_exist_private(origin) && node_exist_private(destination)
 
-			# trying to add the nodes
-			add_node(origin)
-			add_node(destination)
-
 			oi = indexing.index(origin)
 			di = indexing.index(destination)
-
 			matrix[oi, di] = value.nil? ? 1 : value
-			self.see
+			see
 		end
 	end
 
+	# NOT TESTED
 	def add_arc_private(origin_index, destination_index, value)
 		origin_node = indexing.element_at(origin_index)
 		destination_node = indexing.element_at(destination_index)
@@ -68,29 +69,36 @@ class MatrixGraph < Graph
 		matrix[origin_index, destination_index] = value
 	end
 
+	# OK
 	def remove_arc(origin, destination)
 		oi = indexing.index(origin)
 		di = indexing.index(destination)
 		matrix[oi, di] = 0
+		see
 	end
 
+	# OK
 	def arc_exists(origin, destination)
 		oi = indexing.index(origin)
 		di = indexing.index(destination)
-		matrix[oi, di] == 0	# check if the matrix contains a value at (si, di) coordinates, and returns true if so. return false if nil
+		matrix[oi, di] != 0	# check if the matrix contains a value at (oi, di) coordinates, different from 0, and returns true if so. return false if nil
 	end
 
+	# OK
 	def arc_exists_private(origin_index, destination_index)
-		matrix[origin_index, destination_index] == 0	# check if the matrix contains a value at (si, di) coordinates, and returns true if so. return false if nil
+		p 'cheking if arc exist between ' + indexing.element_at(origin_index).name + ' and ' + indexing.element_at(destination_index).name
+		matrix[origin_index, destination_index] != 0
 	end
 
+	# OK
 	def arc_value(origin, destination)
 		oi = indexing.index(origin)
 		di = indexing.index(destination)
 		matrix[oi, di]
 	end
 
-	def edit_value(origin, destination, value)
+	# OK
+	def edit_arc_value(origin, destination, value)
 		if arc_exists(origin, destination)	# allowing to edit only if there is an arc
 			oi = indexing.index(origin)
 			di = indexing.index(destination)
@@ -98,14 +106,23 @@ class MatrixGraph < Graph
 		end
 	end
 
+	# OK
 	def neighbors(node)
 		neighbors = Set.new
 		ni = indexing.index(node)
-		for i in 0..size
+
+		(0..size - 1).each {|i|
 			if arc_exists_private(ni, i)
-				neighbors.add(matrix[ni, i])
+				puts 'yes'
+				neighbors.add(indexing.element_at(i))
 			end
-		end
+		}
+		(0..size - 1).each {|j|
+			if arc_exists_private(j, ni)
+				puts 'yes'
+				neighbors.add(indexing.element_at(j))
+			end
+		}
 		neighbors
 	end
 
@@ -121,21 +138,21 @@ class MatrixGraph < Graph
 	def copy
 		n = size
 		g = MatrixGraph.new(n)
-		for i in 0..n
+		(0..n).each {|i|
 			g.add_node(indexing.element_at(i))
-		end
-		for i in 0..n
-			for j in 0..n
+		}
+		(0..n).each {|i|
+			(0..n).each {|j|
 				if arc_exists_private(i, j)
 					g.add_arc_private(i, j, arc_value(i, j))
 				end
-			end
-		end
+			}
+		}
 		g
 	end
 
 	def see
-		puts matrix.dump(@indexing.nodes)
+		puts matrix.dump(@indexing.nodes.empty? ? nil : @indexing.nodes)
 	end
 
 	private :arc_exists_private, :add_arc_private, :node_exist_private
@@ -155,22 +172,30 @@ class Matrix
 		str = ""
 		space = " "
 		double_space = space + space
-		for i in 0...self.row_size
+		(0...self.row_size).each {|i|
 			if i == 0
 				str << double_space << double_space
-				if elements.nil?
-					(1..row_size).each {|n| str << n.to_s << space}
-				else
-					elements.each {|element| str << element[1].name.to_s << space}
+
+				# if elements has been specified, we output its content
+				unless elements.nil?
+					elements.each {|element|
+						str << element[1].name.to_s << space
+					}
 				end
-					str << "\n" << "\n"
+				str << "\n" << "\n"
 			end
-			str << elements.values[i].name.to_s << double_space
+
+			if !elements.nil? && !elements.values[i].nil?
+				str << elements.values[i].name.to_s << double_space
+			else
+				str << double_space << space
+			end
+
 			for j in 0...self.column_size
-				str << space << self[i,j].to_s
+				str << space << self[i, j].to_s
 			end
 			str << "\n"
-		end
+		}
 		str << "\n"
 	end
 
