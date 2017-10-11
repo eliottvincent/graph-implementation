@@ -10,33 +10,44 @@ class Indexing
 	  	@nodes = Hash.new
 	end
 
+
 	def size
-		nodes.length
+		@nodes.length
 	end
 
   	def add_element(node)
 		#puts '>>>>>Indexing.add_element()>>>>> starting: ' + @nodes.to_a.map(&:inspect).to_s
-		unless has_element_private(node)
+		if has_element_private(node)
+			false
+		else
 			@counter += 1
 			@hsi[node]= size
 			@nodes[node.name] = node
 			#puts '>>>>>Indexing.add_element()>>>>> element added: ' + @nodes.to_a.map(&:inspect).to_s
-			return true
+			true
 		end
 		#puts '>>>>>Indexing.add_element()>>>>> element already exist: ' + @nodes.to_a.map(&:inspect).to_s
-	  	false
 	end
 
-	def has_element_private (node)
+	# check if the node specified in parameter is in the @nodes Hash
+	# private method
+	#
+	def has_element_private(node)
 		@nodes[node.name]
 	end
 
+	# returns the index of the node specified in parameter
+	# the node is searched by it's name (node.name) since @nodes is a Hash
+	#
   	def index(node)
 		@nodes.find_index { |k,_| k== node.name }
 	end
 
+	# returns the node at the specified index
+	# OK
   	def element_at(i)
-		nodes[i]
+		keys = nodes.keys
+		nodes[keys[i]]
 	end
 
 	private :has_element_private
