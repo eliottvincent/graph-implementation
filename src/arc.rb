@@ -6,4 +6,6 @@ class Arc
 		@destination = destination
 		@value = value
 	end
+
+
 end
