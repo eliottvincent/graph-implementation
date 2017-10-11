@@ -1,23 +1,23 @@
 class Graph
 	attr_accessor :size, :copy
 
-	def addNode(node)
-		puts 'TODO: implement Graph.addNode(' + node + ')'
+	def add_node(node)
+		puts 'TODO: implement Graph.add_node(' + node + ')'
 	end
 
-  	def arcExists(origin_node, end_node)
-		puts 'TODO: implement Graph.arcExists(' + origin_node + ', ' + end_node + ')'
+  	def arc_exists(origin, destination)
+		puts 'TODO: implement Graph.arc_exists(' + origin + ', ' + destination + ')'
 	end
 
-  	def addArc(origin_node, end_node, value)
-		puts 'TODO: implement Graph.addArc(' + origin_node + ', ' + end_node + ', ' + value + ')'
+  	def add_arc(origin, destination, value)
+		puts 'TODO: implement Graph.add_arc(' + origin + ', ' + destination + ', ' + value + ')'
 	end
 
-  	def removeArc(origin_node, end_node)
-		puts 'TODO: implement Graph.removeArc(' + origin_node + ', ' + end_node + ')'
+  	def remove_arc(origin, destination)
+		puts 'TODO: implement Graph.remove_arc(' + origin + ', ' + destination + ')'
 	end
 
-  	def arcValue(origin_node, end_node)
-		puts 'TODO: implement Graph.arcValue(' + origin_node + ', ' + end_node + ')'
+  	def arc_value(origin, destination)
+		puts 'TODO: implement Graph.arc_value(' + origin + ', ' + destination + ')'
 	end
 end
