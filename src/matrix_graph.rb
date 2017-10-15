@@ -160,12 +160,11 @@ class MatrixGraph < Graph
 
 	# OK
 	def add_arc(origin, destination, value = nil)
-		if node_exist_private(origin) && node_exist_private(destination)
+		if node_exists(origin) && node_exists(destination)
 
 			oi = indexing.index(origin)
 			di = indexing.index(destination)
 			matrix[oi, di] = value.nil? ? 1 : value
-			see
 		end
 	end
 
@@ -173,10 +172,10 @@ class MatrixGraph < Graph
 	def add_arc_private(origin_index, destination_index, value)
 		origin_node = indexing.element_at(origin_index)
 		destination_node = indexing.element_at(destination_index)
-		add_node(origin_node)
-		add_node(destination_node)
+		if node_exists(origin_node) && node_exists(destination_node)
 
-		matrix[origin_index, destination_index] = value
+			matrix[origin_index, destination_index] = value
+		end
 	end
 
 	# OK
@@ -188,31 +187,52 @@ class MatrixGraph < Graph
 	end
 
 	# OK
+	# check if the value at (oi, di) is different from 0
+	# returns true if so. return false if nil.
+	#
 	def arc_exists(origin, destination)
 		oi = indexing.index(origin)
 		di = indexing.index(destination)
-		matrix[oi, di] != 0	# check if the matrix contains a value at (oi, di) coordinates, different from 0, and returns true if so. return false if nil
+
+		matrix[oi, di] != 0
 	end
 
 	# OK
+	# check if the value at (oi, di) is different from 0
+	# returns true if so. return false if nil.
+	#
 	def arc_exists_private(origin_index, destination_index)
-		p 'cheking if arc exist between ' + indexing.element_at(origin_index).name + ' and ' + indexing.element_at(destination_index).name
 		matrix[origin_index, destination_index] != 0
 	end
 
 	# OK
-	def arc_value(origin, destination)
-		oi = indexing.index(origin)
-		di = indexing.index(destination)
-		matrix[oi, di]
+	def arc_value(origin, destination, value = nil)
+		if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
+			if value.nil?
+				matrix[oi, di]
+			else
+				matrix[oi, di] = value
+			end
+		else
+			raise ArgumentError, 'The arc doesn\'t exist in the graph'
+		end
 	end
 
 	# OK
-	def edit_arc_value(origin, destination, value)
-		if arc_exists(origin, destination)	# allowing to edit only if there is an arc
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
-			matrix[oi, di] = value
+	def arc_value_private(origin_index, destination_index, value = nil)
+		origin_node = indexing.element_at(origin_index)
+		destination_node = indexing.element_at(destination_index)
+
+		if arc_exists(origin_node, destination_node)	# allowing to get/set only if the arc exist
+			if value.nil?
+				matrix[origin_index, destination_index]
+			else
+				matrix[origin_node, destination_node] = value
+			end
+		else
+			raise ArgumentError, 'The arc doesn\'t exist in the graph'
 		end
 	end
 
@@ -220,16 +240,14 @@ class MatrixGraph < Graph
 	def neighbors(node)
 		neighbors = Set.new
 		ni = indexing.index(node)
-
-		(0..size - 1).each {|i|
+		n = size
+		(0..n - 1).each {|i|
 			if arc_exists_private(ni, i)
-				puts 'yes'
 				neighbors.add(indexing.element_at(i))
 			end
 		}
-		(0..size - 1).each {|j|
+		(0..n - 1).each {|j|
 			if arc_exists_private(j, ni)
-				puts 'yes'
 				neighbors.add(indexing.element_at(j))
 			end
 		}
@@ -245,16 +263,20 @@ class MatrixGraph < Graph
 	#  ╚██████╔╝   ██║   ██║███████╗███████║
 	#   ╚═════╝    ╚═╝   ╚═╝╚══════╝╚══════╝
 
+	# OK
 	def copy
 		n = size
 		g = MatrixGraph.new(n)
-		(0..n).each {|i|
-			g.add_node(indexing.element_at(i))
+		(0..n-1).each {|i|
+			node_to_add = indexing.element_at(i)
+			unless node_to_add.nil?
+				g.add_node(node_to_add)
+			end
 		}
-		(0..n).each {|i|
-			(0..n).each {|j|
+		(0..n-1).each {|i|
+			(0..n-1).each {|j|
 				if arc_exists_private(i, j)
-					g.add_arc_private(i, j, arc_value(i, j))
+					g.add_arc_private(i, j, arc_value_private(i, j))
 				end
 			}
 		}
@@ -265,7 +287,6 @@ class MatrixGraph < Graph
 		puts matrix.dump(@indexing.nodes.empty? ? nil : @indexing.nodes)
 	end
 
-	private :arc_exists_private, :add_arc_private, :node_exist_private
 end
 
 
@@ -284,7 +305,7 @@ class Matrix
 		double_space = space + space
 		(0...self.row_size).each {|i|
 			if i == 0
-				str << double_space << double_space
+				str << "↗" << space << double_space
 
 				# if elements has been specified, we output its content
 				unless elements.nil?
