@@ -2,6 +2,7 @@ require './graph'
 require './indexing'
 
 class MatrixGraph < Graph
+
 	attr_accessor :matrix, :indexing
 
 	def initialize(size = nil)
@@ -74,19 +75,80 @@ class MatrixGraph < Graph
 	def add_node(node)
 		if indexing.add_element(node)
 			arcs = Set.new
-			#TODO: increment the matrix's size only if the matrix has too much nodes compared to its basic size
 			if indexing.size > size
 				matrix.increment_size
 			end
 			self.see
 		else
-			raise ArgumentError, "The node has already been added to the graph"
+			raise ArgumentError, 'The node has already been added to the graph'
 		end
 	end
 
-	def node_exist_private(node)
-		true
+	# OK
+	def node_exists(node)
+		!node.nil? && indexing.has_element(node)
 	end
+
+	# OK
+	def indegree(node)
+		indegree = 0
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(i, ni)
+					indegree += 1
+				end
+			}
+		end
+	  	indegree
+	end
+
+	# OK
+	def outdegree(node)
+		outdegree = 0
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(ni, i)
+					outdegree += 1
+				end
+			}
+		end
+		outdegree
+	end
+
+	# OK
+	def predecessors(node)
+		predecessors = Hash.new
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(i, ni)
+					predecessor = indexing.element_at(i)
+					predecessors[predecessor.name] = predecessor
+				end
+			}
+		end
+		predecessors
+	end
+
+	# OK
+	def successors(node)
+		successors = Hash.new
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(ni, i)
+					successor = indexing.element_at(i)
+					successors[successor.name] = successor
+				end
+			}
+		end
+	  	successors
+	end
+
+
+
 
 
 	#   █████╗ ██████╗  ██████╗
