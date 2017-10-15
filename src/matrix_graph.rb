@@ -12,9 +12,57 @@ class MatrixGraph < Graph
 		@matrix = Matrix.zero(size)			# matrix represents the adjacency matrix of the graph
 	end
 
+
+
+
+	#   ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗
+	#  ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║
+	#  ██║  ███╗██████╔╝███████║██████╔╝███████║
+	#  ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║
+	#  ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║
+	#   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝
+
+	# 0 nodes, 0 arcs
+	def is_null
+		if nb_nodes.eql?(0)
+			return true
+		end
+		false
+	end
+
+	# n nodes, 0 arcs
+	def is_empty
+		if nb_arcs.eql?(0)
+			return true
+		end
+		false
+	end
+
+	# OK
 	def size
 		matrix.row_size
 	end
+
+	# OK
+	def nb_nodes
+		indexing.size
+	end
+
+	def nb_arcs
+		n = size
+		nb = 0
+		(0..n-1).each {|i|
+			(0..n-1).each {|j|
+				if arc_exists_private(i, j)
+					nb += 1
+				end
+			}
+		}
+	  	nb
+	end
+
+
+
 
 	#  ███╗   ██╗ ██████╗ ██████╗ ███████╗
 	#  ████╗  ██║██╔═══██╗██╔══██╗██╔════╝
