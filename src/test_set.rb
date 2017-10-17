@@ -1,5 +1,5 @@
-require './node'
-require './matrix_graph'
+require_relative 'node'
+require_relative 'matrix_graph'
 
 class TestSet
 

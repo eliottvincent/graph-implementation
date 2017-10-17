@@ -1,5 +1,5 @@
-require './graph'
-require './indexing'
+require_relative 'graph'
+require_relative'indexing'
 
 class MatrixGraph < Graph
 
@@ -59,7 +59,7 @@ class MatrixGraph < Graph
 				end
 			}
 		}
-	  	nb
+		nb
 	end
 
 
@@ -78,7 +78,7 @@ class MatrixGraph < Graph
 			if indexing.size > size
 				matrix.increment_size
 			end
-			self.see
+			#self.see
 		else
 			raise ArgumentError, 'The node has already been added to the graph'
 		end
@@ -100,7 +100,7 @@ class MatrixGraph < Graph
 				end
 			}
 		end
-	  	indegree
+		indegree
 	end
 
 	# OK
@@ -144,7 +144,7 @@ class MatrixGraph < Graph
 				end
 			}
 		end
-	  	successors
+		successors
 	end
 
 
@@ -191,10 +191,14 @@ class MatrixGraph < Graph
 	# returns true if so. return false if nil.
 	#
 	def arc_exists(origin, destination)
-		oi = indexing.index(origin)
-		di = indexing.index(destination)
+		if node_exists(origin) && node_exists(destination)
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
 
-		matrix[oi, di] != 0
+			puts '(' + indexing.element_at(oi).name + ', ' + indexing.element_at(di).name + ') = ' + matrix[oi, di].to_s
+			return matrix[oi, di] != 0
+		end
+		false
 	end
 
 	# OK
