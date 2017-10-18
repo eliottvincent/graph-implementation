@@ -7,10 +7,7 @@ class MatrixGraph < Graph
 
 	def initialize(size = nil)
 		@indexing = Indexing.new						# indexing represents
-		if size.nil?
-			size = 0
-		end
-		@matrix = Matrix.zero(size)			# matrix represents the adjacency matrix of the graph
+		@matrix = Matrix.zero(size.nil? ? 0 : size)			# matrix represents the adjacency matrix of the graph
 	end
 
 
@@ -23,7 +20,10 @@ class MatrixGraph < Graph
 	#  ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║
 	#   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝
 
-	# 0 nodes, 0 arcs
+
+	# Tells if a graph is null or not
+	# A graph is considered as null when it has 0 nodes AND 0 arcs
+	#
 	def is_null
 		if nb_nodes.eql?(0)
 			return true
@@ -31,7 +31,9 @@ class MatrixGraph < Graph
 		false
 	end
 
-	# n nodes, 0 arcs
+	# Tells if a graph is empty or not
+	# A graph is considered as null when it has n nodes AND 0 arcs
+	#
 	def is_empty
 		if nb_arcs.eql?(0)
 			return true
@@ -39,16 +41,22 @@ class MatrixGraph < Graph
 		false
 	end
 
-	# OK
+	# Returns the size of the adjacency matrix representing the graph.
+	#
 	def size
 		matrix.row_size
 	end
 
-	# OK
+	# Returns the number of nodes added to the graph.
+	# Returns 0 if no nodes at all.
+	#
 	def nb_nodes
 		indexing.size
 	end
 
+	# Returns the number of arcs added to the graph.
+	# Returns 0 if no arcs at all.
+	#
 	def nb_arcs
 		n = size
 		nb = 0
@@ -72,82 +80,115 @@ class MatrixGraph < Graph
 	#  ██║ ╚████║╚██████╔╝██████╔╝███████╗
 	#  ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
 
+	# Check if the node isn't nil and is a Node object
+	#
+	def is_node_valid(node)
+		!node.nil? && node.class == Node
+	end
+
+
+	# Adds a node to the current graph.
+	# Throws an error if the node has already been added to the graph
+	#
 	def add_node(node)
-		if indexing.add_element(node)
-			arcs = Set.new
-			if indexing.size > size
-				matrix.increment_size
+		if is_node_valid(node)
+			if indexing.add_element(node)
+				arcs = Set.new
+				if indexing.size > size
+					matrix.increment_size
+				end
+				#self.see
+			else
+				raise ArgumentError, 'The node has already been added to the graph'
 			end
-			#self.see
-		else
-			raise ArgumentError, 'The node has already been added to the graph'
 		end
 	end
 
-	# OK
+	# Checks if a node exists in the current graph
+	#
 	def node_exists(node)
-		!node.nil? && indexing.has_element(node)
+		if is_node_valid(node)
+			!node.nil? && indexing.has_element(node)
+		end
 	end
 
-	# OK
+	# Returns the indegree value of the node in the current Graph
+	# The indegree is the number of nodes reaching the specified node
+	#
 	def indegree(node)
-		indegree = 0
-		if node_exists(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(i, ni)
-					indegree += 1
-				end
-			}
+		if is_node_valid(node)
+			indegree = 0
+			if node_exists(node)
+				ni = indexing.index(node)
+				(0..size - 1).each {|i|
+					if arc_exists_private(i, ni)
+						indegree += 1
+					end
+				}
+			end
+			indegree
 		end
-		indegree
 	end
 
-	# OK
+	# Returns the outdegree value of the node in the current Graph
+	# The outdegree is the number of nodes reached by the specified node (through an arc)
+	#
 	def outdegree(node)
-		outdegree = 0
-		if node_exists(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(ni, i)
-					outdegree += 1
-				end
-			}
+		if is_node_valid(node)
+			outdegree = 0
+			if node_exists(node)
+				ni = indexing.index(node)
+				(0..size - 1).each {|i|
+					if arc_exists_private(ni, i)
+						outdegree += 1
+					end
+				}
+			end
+			outdegree
 		end
-		outdegree
 	end
 
-	# OK
+	# Returns a hash populated with all nodes reaching the specified node (through an arc)
+	#
 	def predecessors(node)
-		predecessors = Hash.new
-		if node_exists(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(i, ni)
-					predecessor = indexing.element_at(i)
-					predecessors[predecessor.name] = predecessor
-				end
-			}
+		if is_node_valid(node)
+			predecessors = Hash.new
+			if node_exists(node)
+				ni = indexing.index(node)
+				(0..size - 1).each {|i|
+					if arc_exists_private(i, ni)
+						predecessor = indexing.element_at(i)
+						predecessors[predecessor.name] = predecessor
+					end
+				}
+			end
+			predecessors
 		end
-		predecessors
 	end
 
-	# OK
+	# Returns a hash populated with all nodes reached by the specified node (through an arc)
+	#
 	def successors(node)
-		successors = Hash.new
-		if node_exists(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(ni, i)
-					successor = indexing.element_at(i)
-					successors[successor.name] = successor
-				end
-			}
+		if is_node_valid(node)
+			successors = Hash.new
+			if node_exists(node)
+				ni = indexing.index(node)
+				(0..size - 1).each {|i|
+					if arc_exists_private(ni, i)
+						successor = indexing.element_at(i)
+						successors[successor.name] = successor
+					end
+				}
+			end
+			successors
 		end
-		successors
 	end
 
-
+	# Returns the neighbors, which are all the nodes the specified node is connected to.
+	#
+	def neighbors(node)
+		predecessors(node).merge(successors(node))
+	end
 
 
 
@@ -158,13 +199,17 @@ class MatrixGraph < Graph
 	#  ██║  ██║██║  ██║╚██████╗
 	#  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-	# OK
-	def add_arc(origin, destination, value = nil)
-		if node_exists(origin) && node_exists(destination)
 
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
-			matrix[oi, di] = value.nil? ? 1 : value
+	# Adds an arc to the current graph.
+	#
+	def add_arc(origin, destination, value = nil)
+		if is_node_valid(origin) && is_node_valid(destination)
+			if node_exists(origin) && node_exists(destination)
+
+				oi = indexing.index(origin)
+				di = indexing.index(destination)
+				matrix[oi, di] = value.nil? ? 1 : value
+			end
 		end
 	end
 
@@ -180,23 +225,28 @@ class MatrixGraph < Graph
 
 	# OK
 	def remove_arc(origin, destination)
-		oi = indexing.index(origin)
-		di = indexing.index(destination)
-		matrix[oi, di] = 0
-		see
+		if is_node_valid(origin) && is_node_valid(destination)
+			if node_exists(origin) && node_exists(destination)
+
+				oi = indexing.index(origin)
+				di = indexing.index(destination)
+				matrix[oi, di] = 0
+			end
+		end
 	end
 
-	# OK
-	# check if the value at (oi, di) is different from 0
+	# Checks if an arc between two nodes exist or not.
 	# returns true if so. return false if nil.
 	#
 	def arc_exists(origin, destination)
-		if node_exists(origin) && node_exists(destination)
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
+		if is_node_valid(origin) && is_node_valid(destination)
+			if node_exists(origin) && node_exists(destination)
+				oi = indexing.index(origin)
+				di = indexing.index(destination)
 
-			puts '(' + indexing.element_at(oi).name + ', ' + indexing.element_at(di).name + ') = ' + matrix[oi, di].to_s
-			return matrix[oi, di] != 0
+				puts '(' + indexing.element_at(oi).name + ', ' + indexing.element_at(di).name + ') = ' + matrix[oi, di].to_s
+				return matrix[oi, di] != 0
+			end
 		end
 		false
 	end
@@ -209,6 +259,7 @@ class MatrixGraph < Graph
 		matrix[origin_index, destination_index] != 0
 	end
 
+
 	# OK
 	def arc_value(origin, destination, value = nil)
 		if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
@@ -220,7 +271,7 @@ class MatrixGraph < Graph
 				matrix[oi, di] = value
 			end
 		else
-			raise ArgumentError, 'The arc doesn\'t exist in the graph'
+			raise ArgumentError, 'The arc doesnt exist in the graph'
 		end
 	end
 
@@ -240,23 +291,6 @@ class MatrixGraph < Graph
 		end
 	end
 
-	# OK
-	def neighbors(node)
-		neighbors = Set.new
-		ni = indexing.index(node)
-		n = size
-		(0..n - 1).each {|i|
-			if arc_exists_private(ni, i)
-				neighbors.add(indexing.element_at(i))
-			end
-		}
-		(0..n - 1).each {|j|
-			if arc_exists_private(j, ni)
-				neighbors.add(indexing.element_at(j))
-			end
-		}
-		neighbors
-	end
 
 
 
