@@ -21,9 +21,9 @@ class TestSet
 	graph_matrix.add_node(node_one)
 	graph_matrix.add_node(node_two)
 	graph_matrix.add_node(node_three)
-	graph_matrix.add_node(node_five)
 	graph_matrix.add_node(node_four)
-	# graph_matrix.add_node(node_six)
+	graph_matrix.add_node(node_five)
+	#graph_matrix.add_node(node_six)
 
 	# viewing the graph again
 	puts graph_matrix.see

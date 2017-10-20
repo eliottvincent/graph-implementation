@@ -207,6 +207,26 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal false, @graph_matrix.arc_exists(@node_six, @node_three)
 		end
 
+		should 'the arc_exists_private method works properly' do
+			node_one_index = @graph_matrix.indexing.index(@node_one)
+			node_two_index = @graph_matrix.indexing.index(@node_two)
+			node_three_index = @graph_matrix.indexing.index(@node_three)
+			node_four_index = @graph_matrix.indexing.index(@node_four)
+			node_five_index = @graph_matrix.indexing.index(@node_five)
+			node_six_index = @graph_matrix.indexing.index(@node_six)
+
+			puts node_one_index
+			puts node_six_index
+
+			assert_equal true, @graph_matrix.arc_exists_private(node_one_index, node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(node_two_index, node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(node_four_index, node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(node_one_index, node_three_index)
+			assert_equal true, @graph_matrix.arc_exists_private(node_two_index, node_four_index)
+			assert_equal false, @graph_matrix.arc_exists_private(node_five_index, node_one_index)
+			assert_equal false, @graph_matrix.arc_exists_private(node_six_index, node_three_index)
+		end
+
 		should 'the arc_value method works properly bis' do
 			@graph_matrix.arc_value(@node_one, @node_two, 2)
 			assert_equal 2, @graph_matrix.arc_value(@node_one, @node_two)
