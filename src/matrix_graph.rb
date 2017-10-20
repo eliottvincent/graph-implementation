@@ -99,7 +99,7 @@ class MatrixGraph < Graph
 				end
 				#self.see
 			else
-				raise ArgumentError, 'The node has already been added to the graph'
+				raise ArgumentError, 'A similar node (exact same node object or same name) has already been added to the graph.'
 			end
 		end
 	end
@@ -107,81 +107,71 @@ class MatrixGraph < Graph
 	# Checks if a node exists in the current graph
 	#
 	def node_exists(node)
-		if is_node_valid(node)
-			!node.nil? && indexing.has_element(node)
-		end
+		is_node_valid(node) && indexing.has_element(node)
 	end
 
 	# Returns the indegree value of the node in the current Graph
 	# The indegree is the number of nodes reaching the specified node
 	#
 	def indegree(node)
-		if is_node_valid(node)
-			indegree = 0
-			if node_exists(node)
-				ni = indexing.index(node)
-				(0..size - 1).each {|i|
-					if arc_exists_private(i, ni)
-						indegree += 1
-					end
-				}
-			end
-			indegree
+		indegree = 0
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(i, ni)
+					indegree += 1
+				end
+			}
 		end
+		indegree
 	end
 
 	# Returns the outdegree value of the node in the current Graph
 	# The outdegree is the number of nodes reached by the specified node (through an arc)
 	#
 	def outdegree(node)
-		if is_node_valid(node)
-			outdegree = 0
-			if node_exists(node)
-				ni = indexing.index(node)
-				(0..size - 1).each {|i|
-					if arc_exists_private(ni, i)
-						outdegree += 1
-					end
-				}
-			end
-			outdegree
+		outdegree = 0
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(ni, i)
+					outdegree += 1
+				end
+			}
 		end
+		outdegree
 	end
 
 	# Returns a hash populated with all nodes reaching the specified node (through an arc)
 	#
 	def predecessors(node)
-		if is_node_valid(node)
-			predecessors = Hash.new
-			if node_exists(node)
-				ni = indexing.index(node)
-				(0..size - 1).each {|i|
-					if arc_exists_private(i, ni)
-						predecessor = indexing.element_at(i)
-						predecessors[predecessor.name] = predecessor
-					end
-				}
-			end
-			predecessors
+		predecessors = Hash.new
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(i, ni)
+					predecessor = indexing.element_at(i)
+					predecessors[predecessor.name] = predecessor
+				end
+			}
 		end
+		predecessors
 	end
 
 	# Returns a hash populated with all nodes reached by the specified node (through an arc)
 	#
 	def successors(node)
-		if is_node_valid(node)
-			successors = Hash.new
-			if node_exists(node)
-				ni = indexing.index(node)
-				(0..size - 1).each {|i|
-					if arc_exists_private(ni, i)
-						successor = indexing.element_at(i)
-						successors[successor.name] = successor
-					end
-				}
-			end
-			successors
+		successors = Hash.new
+		if node_exists(node)
+			ni = indexing.index(node)
+			(0..size - 1).each {|i|
+				if arc_exists_private(ni, i)
+					successor = indexing.element_at(i)
+					successors[successor.name] = successor
+				end
+			}
 		end
+		successors
 	end
 
 	# Returns the neighbors, which are all the nodes the specified node is connected to.
@@ -189,6 +179,7 @@ class MatrixGraph < Graph
 	def neighbors(node)
 		predecessors(node).merge(successors(node))
 	end
+
 
 
 
@@ -203,14 +194,14 @@ class MatrixGraph < Graph
 	# Adds an arc to the current graph.
 	#
 	def add_arc(origin, destination, value = nil)
-		if is_node_valid(origin) && is_node_valid(destination)
-			if node_exists(origin) && node_exists(destination)
+		if node_exists(origin) && node_exists(destination)
 
-				oi = indexing.index(origin)
-				di = indexing.index(destination)
-				matrix[oi, di] = value.nil? ? 1 : value
-			end
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
+			matrix[oi, di] = value.nil? ? 1 : value
+			return true
 		end
+		false
 	end
 
 	# NOT TESTED
@@ -220,59 +211,67 @@ class MatrixGraph < Graph
 		if node_exists(origin_node) && node_exists(destination_node)
 
 			matrix[origin_index, destination_index] = value
+			return true
 		end
+		false
 	end
 
 	# OK
 	def remove_arc(origin, destination)
-		if is_node_valid(origin) && is_node_valid(destination)
-			if node_exists(origin) && node_exists(destination)
+		if node_exists(origin) && node_exists(destination)
 
-				oi = indexing.index(origin)
-				di = indexing.index(destination)
-				matrix[oi, di] = 0
-			end
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
+			matrix[oi, di] = 0
+			return true
 		end
+		false
 	end
 
 	# Checks if an arc between two nodes exist or not.
 	# returns true if so. return false if nil.
 	#
 	def arc_exists(origin, destination)
-		if is_node_valid(origin) && is_node_valid(destination)
-			if node_exists(origin) && node_exists(destination)
-				oi = indexing.index(origin)
-				di = indexing.index(destination)
+		if node_exists(origin) && node_exists(destination)
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
 
-				puts '(' + indexing.element_at(oi).name + ', ' + indexing.element_at(di).name + ') = ' + matrix[oi, di].to_s
-				return matrix[oi, di] != 0
-			end
+			return matrix[oi, di] != 0
 		end
 		false
 	end
 
-	# OK
-	# check if the value at (oi, di) is different from 0
+	# Checks if the value at (oi, di) is different from 0
 	# returns true if so. return false if nil.
 	#
 	def arc_exists_private(origin_index, destination_index)
-		matrix[origin_index, destination_index] != 0
+		origin_node = indexing.element_at(origin_index)
+		destination_node = indexing.element_at(destination_index)
+
+		if node_exists(origin_node) && node_exists(destination_node)
+
+			return matrix[origin_index, destination_index] != 0
+		end
+		false
 	end
 
 
 	# OK
 	def arc_value(origin, destination, value = nil)
-		if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
-			if value.nil?
-				matrix[oi, di]
+		if node_exists(origin) && node_exists(destination)
+			if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
+				oi = indexing.index(origin)
+				di = indexing.index(destination)
+				if value.nil?
+					return matrix[oi, di]
+				else
+					return matrix[oi, di] = value
+				end
 			else
-				matrix[oi, di] = value
+				raise ArgumentError, 'The arc doesnt exist in the graph'
 			end
-		else
-			raise ArgumentError, 'The arc doesnt exist in the graph'
 		end
+		false
 	end
 
 	# OK
