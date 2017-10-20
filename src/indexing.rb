@@ -31,24 +31,41 @@ class Indexing
 	# check if the node specified in parameter is in the @nodes Hash
 	#
 	def has_element(node)
-		if node.nil?
-			raise ArgumentError, 'The node is nil'
+		if is_node_valid(node)
+			@nodes.each_with_index { |(key,value), index|
+				if key == node.name && value.eql?(node)
+					return true
+				end
+			}
 		end
-		@nodes.key?(node.name) && node.eql?(@nodes[node.name])
+		false
+	end
+
+	# TODO: move this to Node class?
+	def is_node_valid(node)
+		!node.nil? && node.class == Node
 	end
 
 	# returns the index of the node specified in parameter
 	# the node is searched by it's name (node.name) since @nodes is a Hash
+	# NOT WORKING PERFECTLY:
+	# - if a Node 'a' is specified, not belonging to the graph indexing...
+	# - ...it will return the index of a Node with the same name (if it exist)
 	#
 	def index(node)
 		if node.nil?
 			raise ArgumentError, 'The node is nil'
 		end
-		@nodes.find_index { |k,_| k== node.name }
+		@nodes.each_with_index { |(key,value), index|
+			if key == node.name && value.eql?(node)
+				return index
+			end
+		}
+		-1
 	end
 
 	# returns the node at the specified index
-	# OK
+	#
 	def element_at(i)
 		keys = nodes.keys
 		nodes[keys[i]]
