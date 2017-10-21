@@ -41,6 +41,16 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal true, @graph_matrix.is_empty
 			assert_equal true, @graph_matrix_size.is_empty
 		end
+	end
+
+	context 'Initializing some MatrixGraph objects' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@size = 5
+			@graph_matrix_size = MatrixGraph.new(@size)
+		end
 
 		should 'size works properly' do
 			assert_equal 0, @graph_matrix.size
@@ -56,8 +66,8 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal 0, @graph_matrix.nb_arcs
 			assert_equal 0, @graph_matrix_size.nb_arcs
 		end
-
 	end
+
 
 
 
@@ -91,42 +101,6 @@ class TestGraphMatrix < Minitest::Test
 			@graph_matrix.add_node(@node_five)
 		end
 
-		should 'the is_node_valid works properly' do
-			assert_equal true, @graph_matrix.is_node_valid(@node_one)
-			assert_equal true, @graph_matrix.is_node_valid(@node_two)
-			assert_equal true, @graph_matrix.is_node_valid(@node_three)
-			assert_equal true, @graph_matrix.is_node_valid(@node_four)
-			assert_equal true, @graph_matrix.is_node_valid(@node_five)
-			assert_equal true, @graph_matrix.is_node_valid(@node_six)
-			assert_equal false, @graph_matrix.is_node_valid(@invalid_node)
-			assert_equal false, @graph_matrix.is_node_valid(@invalid_node_bis)
-		end
-
-		should 'the node_exists method works properly' do
-			assert_equal true, @graph_matrix.node_exists(@node_one)
-			assert_equal true, @graph_matrix.node_exists(@node_two)
-			assert_equal true, @graph_matrix.node_exists(@node_three)
-			assert_equal true, @graph_matrix.node_exists(@node_four)
-			assert_equal true, @graph_matrix.node_exists(@node_five)
-			assert_equal false, @graph_matrix.node_exists(@node_six)
-		end
-
-		should 'the indegree method returns 0 for every node (no arcs)' do
-			assert_equal 0, @graph_matrix.indegree(@node_one)
-			assert_equal 0, @graph_matrix.indegree(@node_two)
-			assert_equal 0, @graph_matrix.indegree(@node_three)
-			assert_equal 0, @graph_matrix.indegree(@node_four)
-			assert_equal 0, @graph_matrix.indegree(@node_five)
-		end
-
-		should 'the outdegree method returns 0 for every node (no arcs)' do
-			assert_equal 0, @graph_matrix.outdegree(@node_one)
-			assert_equal 0, @graph_matrix.outdegree(@node_two)
-			assert_equal 0, @graph_matrix.outdegree(@node_three)
-			assert_equal 0, @graph_matrix.outdegree(@node_four)
-			assert_equal 0, @graph_matrix.outdegree(@node_five)
-		end
-
 		should 'is_null doesn\'t return true anymore' do
 			refute_equal true, @graph_matrix.is_null
 		end
@@ -157,6 +131,169 @@ class TestGraphMatrix < Minitest::Test
 
 	end
 
+	context 'adding nodes to a MatrixGraph object' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+			@invalid_node = nil
+			@invalid_node_bis = String.new
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+		end
+
+		should 'the is_node works properly' do
+			assert_equal true, @graph_matrix.is_node(@node_one)
+			assert_equal true, @graph_matrix.is_node(@node_two)
+			assert_equal true, @graph_matrix.is_node(@node_three)
+			assert_equal true, @graph_matrix.is_node(@node_four)
+			assert_equal true, @graph_matrix.is_node(@node_five)
+			assert_equal true, @graph_matrix.is_node(@node_six)
+			assert_equal false, @graph_matrix.is_node(@invalid_node)
+			assert_equal false, @graph_matrix.is_node(@invalid_node_bis)
+		end
+
+		should 'the is_node_in_graph works properly' do
+			assert_equal true, @graph_matrix.is_node_in_graph(@node_one)
+			assert_equal true, @graph_matrix.is_node_in_graph(@node_two)
+			assert_equal true, @graph_matrix.is_node_in_graph(@node_three)
+			assert_equal true, @graph_matrix.is_node_in_graph(@node_four)
+			assert_equal true, @graph_matrix.is_node_in_graph(@node_five)
+			assert_equal false, @graph_matrix.is_node_in_graph(@node_six)
+			assert_equal false, @graph_matrix.is_node_in_graph(@invalid_node)
+			assert_equal false, @graph_matrix.is_node_in_graph(@invalid_node_bis)
+		end
+
+		should 'the is_node_valid method works properly' do
+			assert_equal true, @graph_matrix.is_node_valid(@node_one)
+			assert_equal true, @graph_matrix.is_node_valid(@node_two)
+			assert_equal true, @graph_matrix.is_node_valid(@node_three)
+			assert_equal true, @graph_matrix.is_node_valid(@node_four)
+			assert_equal true, @graph_matrix.is_node_valid(@node_five)
+			assert_equal false, @graph_matrix.is_node_valid(@node_six)
+			assert_equal false, @graph_matrix.is_node(@invalid_node)
+			assert_equal false, @graph_matrix.is_node(@invalid_node_bis)
+		end
+
+		should 'the are_nodes_valid method works properly' do
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_one, @node_one)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_one, @node_two)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_one, @node_three)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_one, @node_four)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_one, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_one, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_one, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_one, @invalid_node_bis)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_two, @node_one)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_two, @node_two)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_two, @node_three)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_two, @node_four)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_two, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_two, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_two, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_two, @invalid_node_bis)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_three, @node_one)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_three, @node_two)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_three, @node_three)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_three, @node_four)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_three, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_three, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_three, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_three, @invalid_node_bis)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_four, @node_one)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_four, @node_two)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_four, @node_three)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_four, @node_four)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_four, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_four, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_four, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_four, @invalid_node_bis)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_five, @node_one)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_five, @node_two)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_five, @node_three)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_five, @node_four)
+			assert_equal true, @graph_matrix.are_nodes_valid(@node_five, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_five, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_five, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_five, @invalid_node_bis)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_one)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_two)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_three)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_four)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@node_six, @invalid_node_bis)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_one)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_two)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_three)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_four)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node, @invalid_node_bis)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_one)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_two)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_three)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_four)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_five)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @node_six)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @invalid_node)
+			assert_equal false, @graph_matrix.are_nodes_valid(@invalid_node_bis, @invalid_node_bis)
+
+		end
+
+	end
+
+	context 'adding nodes to a MatrixGraph object' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+			@invalid_node = nil
+			@invalid_node_bis = String.new
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+		end
+
+		should 'the indegree method returns 0 for every node (no arcs)' do
+			assert_equal 0, @graph_matrix.indegree(@node_one)
+			assert_equal 0, @graph_matrix.indegree(@node_two)
+			assert_equal 0, @graph_matrix.indegree(@node_three)
+			assert_equal 0, @graph_matrix.indegree(@node_four)
+			assert_equal 0, @graph_matrix.indegree(@node_five)
+		end
+
+		should 'the outdegree method returns 0 for every node (no arcs)' do
+			assert_equal 0, @graph_matrix.outdegree(@node_one)
+			assert_equal 0, @graph_matrix.outdegree(@node_two)
+			assert_equal 0, @graph_matrix.outdegree(@node_three)
+			assert_equal 0, @graph_matrix.outdegree(@node_four)
+			assert_equal 0, @graph_matrix.outdegree(@node_five)
+		end
+
+	end
+
 
 
 
@@ -167,7 +304,8 @@ class TestGraphMatrix < Minitest::Test
 	#  ██║  ██║██║  ██║╚██████╗███████║
 	#  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝
 
-	context 'adding arcs to a MatrixGraph object' do
+
+	context 'Testing add_arc and arc_exists methods.' do
 
 		setup do
 			@graph_matrix = MatrixGraph.new
@@ -192,10 +330,6 @@ class TestGraphMatrix < Minitest::Test
 			@graph_matrix.add_arc(@node_two, @node_four)
 		end
 
-		should 'the arcs are created properly' do
-
-		end
-
 		should 'the arc_exists method works properly' do
 			@graph_matrix.see
 			assert_equal true, @graph_matrix.arc_exists(@node_one, @node_two)
@@ -207,24 +341,183 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal false, @graph_matrix.arc_exists(@node_six, @node_three)
 		end
 
+		should 'is_empty returns false because we added some arcs' do
+			assert_equal false, @graph_matrix.is_empty
+		end
+
+		should 'nb_arcs doesn\'t 0 anymore' do
+			refute_equal 0, @graph_matrix.nb_arcs
+		end
+
+		should 'nb_arcs returns 5 because we added 5 arcs' do
+			assert_equal 5, @graph_matrix.nb_arcs
+		end
+
+	end
+
+	context 'Testing add_arc_private and arc_exists_private methods.' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+
+			@node_one_index = @graph_matrix.indexing.index(@node_one)
+			@node_two_index = @graph_matrix.indexing.index(@node_two)
+			@node_three_index = @graph_matrix.indexing.index(@node_three)
+			@node_four_index = @graph_matrix.indexing.index(@node_four)
+			@node_five_index = @graph_matrix.indexing.index(@node_five)
+			@node_six_index = @graph_matrix.indexing.index(@node_six)
+
+			@graph_matrix.add_arc_private(@node_one_index, @node_two_index)
+			@graph_matrix.add_arc_private(@node_two_index, @node_two_index)
+			@graph_matrix.add_arc_private(@node_four_index, @node_two_index)
+			@graph_matrix.add_arc_private(@node_one_index, @node_three_index)
+			@graph_matrix.add_arc_private(@node_two_index, @node_four_index)
+		end
+
 		should 'the arc_exists_private method works properly' do
-			node_one_index = @graph_matrix.indexing.index(@node_one)
-			node_two_index = @graph_matrix.indexing.index(@node_two)
-			node_three_index = @graph_matrix.indexing.index(@node_three)
-			node_four_index = @graph_matrix.indexing.index(@node_four)
-			node_five_index = @graph_matrix.indexing.index(@node_five)
-			node_six_index = @graph_matrix.indexing.index(@node_six)
 
-			puts node_one_index
-			puts node_six_index
+			assert_equal true, @graph_matrix.arc_exists_private(@node_one_index, @node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(@node_two_index, @node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(@node_four_index, @node_two_index)
+			assert_equal true, @graph_matrix.arc_exists_private(@node_one_index, @node_three_index)
+			assert_equal true, @graph_matrix.arc_exists_private(@node_two_index, @node_four_index)
+			assert_equal false, @graph_matrix.arc_exists_private(@node_five_index, @node_one_index)
+			assert_equal false, @graph_matrix.arc_exists_private(@node_six_index, @node_three_index)
+		end
 
-			assert_equal true, @graph_matrix.arc_exists_private(node_one_index, node_two_index)
-			assert_equal true, @graph_matrix.arc_exists_private(node_two_index, node_two_index)
-			assert_equal true, @graph_matrix.arc_exists_private(node_four_index, node_two_index)
-			assert_equal true, @graph_matrix.arc_exists_private(node_one_index, node_three_index)
-			assert_equal true, @graph_matrix.arc_exists_private(node_two_index, node_four_index)
-			assert_equal false, @graph_matrix.arc_exists_private(node_five_index, node_one_index)
-			assert_equal false, @graph_matrix.arc_exists_private(node_six_index, node_three_index)
+		should 'is_empty returns false because we added some arcs' do
+			assert_equal false, @graph_matrix.is_empty
+		end
+
+		should 'nb_arcs doesn\'t 0 anymore' do
+			refute_equal 0, @graph_matrix.nb_arcs
+		end
+
+		should 'nb_arcs returns 5 because we added 5 arcs' do
+			assert_equal 5, @graph_matrix.nb_arcs
+		end
+	end
+
+	context 'Testing remove_arc method.' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+
+			@graph_matrix.add_arc(@node_one, @node_two)
+			@graph_matrix.add_arc(@node_two, @node_two)
+			@graph_matrix.add_arc(@node_four, @node_two)
+			@graph_matrix.add_arc(@node_one, @node_three)
+			@graph_matrix.add_arc(@node_two, @node_four)
+		end
+
+		should 'the arc_exists_private method works properly' do
+
+			assert_equal false, @graph_matrix.remove_arc(@node_one, @node_one)
+			assert_equal true, @graph_matrix.remove_arc(@node_one, @node_two)
+			assert_equal true, @graph_matrix.remove_arc(@node_one, @node_three)
+			assert_equal false, @graph_matrix.remove_arc(@node_one, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_one, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_one, @node_six)
+
+			assert_equal false, @graph_matrix.remove_arc(@node_two, @node_one)
+			assert_equal true, @graph_matrix.remove_arc(@node_two, @node_two)
+			assert_equal false, @graph_matrix.remove_arc(@node_two, @node_three)
+			assert_equal true, @graph_matrix.remove_arc(@node_two, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_two, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_two, @node_six)
+
+
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_one)
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_two)
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_three)
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_three, @node_six)
+
+			assert_equal false, @graph_matrix.remove_arc(@node_four, @node_one)
+			assert_equal true, @graph_matrix.remove_arc(@node_four, @node_two)
+			assert_equal false, @graph_matrix.remove_arc(@node_four, @node_three)
+			assert_equal false, @graph_matrix.remove_arc(@node_four, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_four, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_four, @node_six)
+
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_one)
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_two)
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_three)
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_five, @node_six)
+
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_one)
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_two)
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_three)
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_four)
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_five)
+			assert_equal false, @graph_matrix.remove_arc(@node_six, @node_six)
+		end
+
+		should 'is_empty returns false because we added some arcs' do
+			assert_equal false, @graph_matrix.is_empty
+		end
+
+		should 'nb_arcs doesn\'t 0 anymore' do
+			refute_equal 0, @graph_matrix.nb_arcs
+		end
+
+		should 'nb_arcs returns 5 because we added 5 arcs' do
+			assert_equal 5, @graph_matrix.nb_arcs
+		end
+	end
+
+	context 'Testing arc_value method.' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+
+			@graph_matrix.add_arc(@node_one, @node_two)
+			@graph_matrix.add_arc(@node_two, @node_two)
+			@graph_matrix.add_arc(@node_four, @node_two)
+			@graph_matrix.add_arc(@node_one, @node_three)
+			@graph_matrix.add_arc(@node_two, @node_four)
 		end
 
 		should 'the arc_value method works properly bis' do
@@ -238,6 +531,32 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal 5, @graph_matrix.arc_value(@node_one, @node_three)
 			@graph_matrix.arc_value(@node_two, @node_four, 6)
 			assert_equal 6, @graph_matrix.arc_value(@node_two, @node_four)
+		end
+	end
+
+	context 'Testing indegree and outdegree methods.' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+
+			@graph_matrix.add_arc(@node_one, @node_two)
+			@graph_matrix.add_arc(@node_two, @node_two)
+			@graph_matrix.add_arc(@node_four, @node_two)
+			@graph_matrix.add_arc(@node_one, @node_three)
+			@graph_matrix.add_arc(@node_two, @node_four)
 		end
 
 		should 'the indegree method works properly' do
@@ -254,6 +573,32 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal 0, @graph_matrix.outdegree(@node_three)
 			assert_equal 1, @graph_matrix.outdegree(@node_four)
 			assert_equal 0, @graph_matrix.outdegree(@node_five)
+		end
+	end
+
+	context 'Testing predecessors, successors and neighbors methods.' do
+
+		setup do
+			@graph_matrix = MatrixGraph.new
+
+			@node_one = Node.new('a', false)
+			@node_two = Node.new('b', false)
+			@node_three = Node.new('c', false)
+			@node_four = Node.new('d', false)
+			@node_five = Node.new('e', false)
+			@node_six = Node.new('a', false)
+
+			@graph_matrix.add_node(@node_one)
+			@graph_matrix.add_node(@node_two)
+			@graph_matrix.add_node(@node_three)
+			@graph_matrix.add_node(@node_four)
+			@graph_matrix.add_node(@node_five)
+
+			@graph_matrix.add_arc(@node_one, @node_two)
+			@graph_matrix.add_arc(@node_two, @node_two)
+			@graph_matrix.add_arc(@node_four, @node_two)
+			@graph_matrix.add_arc(@node_one, @node_three)
+			@graph_matrix.add_arc(@node_two, @node_four)
 		end
 
 		should 'the predecessors method works properly' do
@@ -335,18 +680,6 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal node_three_neighbors, @graph_matrix.neighbors(@node_three)
 			assert_equal node_four_neighbors, @graph_matrix.neighbors(@node_four)
 			assert_equal node_five_neighbors, @graph_matrix.neighbors(@node_five)
-		end
-
-		should 'is_empty returns false because we added some arcs' do
-			assert_equal false, @graph_matrix.is_empty
-		end
-
-		should 'nb_arcs doesn\'t 0 anymore' do
-			refute_equal 0, @graph_matrix.nb_arcs
-		end
-
-		should 'nb_arcs returns 5 because we added 5 arcs' do
-			assert_equal 5, @graph_matrix.nb_arcs
 		end
 
 	end
