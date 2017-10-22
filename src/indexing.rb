@@ -54,7 +54,8 @@ class Indexing
 	#
 	def index(node)
 		if node.nil?
-			raise ArgumentError, 'The node is nil'
+			#raise ArgumentError, 'The node is nil'
+			return -1
 		end
 		@nodes.each_with_index { |(key,value), index|
 			if key == node.name && value.eql?(node)

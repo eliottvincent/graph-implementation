@@ -115,10 +115,13 @@ class MatrixGraph < Graph
 				if indexing.size > size
 					matrix.increment_size
 				end
+				return true
 			else
-				raise ArgumentError, 'A similar node (same node object or same name) has already been added to the graph.'
+				#raise ArgumentError, 'A similar node (same node object or same name) has already been added to the graph.'
+				return false
 			end
 		end
+		false
 	end
 
 	# Returns the indegree value of the node in the current Graph
@@ -133,8 +136,9 @@ class MatrixGraph < Graph
 					indegree += 1
 				end
 			}
+			return indegree
 		end
-		indegree
+		-1
 	end
 
 	# Returns the outdegree value of the node in the current Graph
@@ -149,8 +153,9 @@ class MatrixGraph < Graph
 					outdegree += 1
 				end
 			}
+			return outdegree
 		end
-		outdegree
+		-1
 	end
 
 	# Returns a hash populated with all nodes reaching the specified node (through an arc)
@@ -206,7 +211,6 @@ class MatrixGraph < Graph
 	#
 	def add_arc(origin, destination, value = nil)
 		if are_nodes_valid(origin, destination)
-
 			oi = indexing.index(origin)
 			di = indexing.index(destination)
 			matrix[oi, di] = value.nil? ? 1 : value
@@ -233,10 +237,8 @@ class MatrixGraph < Graph
 	#
 	def arc_exists(origin, destination)
 		if are_nodes_valid(origin, destination)
-
 			oi = indexing.index(origin)
 			di = indexing.index(destination)
-
 			return matrix[oi, di] != 0
 		end
 		false
@@ -249,7 +251,6 @@ class MatrixGraph < Graph
 		origin_node = indexing.element_at(origin_index)
 		destination_node = indexing.element_at(destination_index)
 		if are_nodes_valid(origin_node, destination_node)
-
 			return matrix[origin_index, destination_index] != 0
 		end
 		false
@@ -258,15 +259,11 @@ class MatrixGraph < Graph
 	# Removes an arc.
 	#
 	def remove_arc(origin, destination)
-		if are_nodes_valid(origin, destination)
-			if arc_exists(origin, destination)
-				oi = indexing.index(origin)
-				di = indexing.index(destination)
-				matrix[oi, di] = 0
-				return true
-			else
-			  return false
-			end
+		if arc_exists(origin, destination)
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
+			matrix[oi, di] = 0
+			return true
 		end
 		false
 	end
@@ -275,21 +272,21 @@ class MatrixGraph < Graph
 	# If a value (3rd argument) is specified, the Arc between origin and destination will have this new value.
 	#
 	def arc_value(origin, destination, value = nil)
-		if are_nodes_valid(origin, destination)
-			if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
-				oi = indexing.index(origin)
-				di = indexing.index(destination)
-				if value.nil?
-					return matrix[oi, di]
-				else
-					matrix[oi, di] = value
-				  	return true
-				end
+		if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
+			oi = indexing.index(origin)
+			di = indexing.index(destination)
+			if value.nil?
+				return matrix[oi, di]
 			else
-				return false
+				matrix[oi, di] = value
+				return true
 			end
 		end
-		false
+		if value.nil?
+			-1
+		else
+			false
+		end
 	end
 
 	# OK
@@ -302,10 +299,10 @@ class MatrixGraph < Graph
 				return matrix[origin_index, destination_index]
 			else
 				matrix[origin_node, destination_node] = value
-			  	return true
+				return true
 			end
 		end
-	  	false
+		false
 	end
 
 
