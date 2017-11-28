@@ -1,23 +1,30 @@
 class Graph
 	attr_accessor :size, :copy
 
-	def add_node(node)
-		puts 'TODO: implement Graph.add_node(' + node + ')'
-	end
 
-  	def arc_exists(origin, destination)
-		puts 'TODO: implement Graph.arc_exists(' + origin + ', ' + destination + ')'
-	end
 
-  	def add_arc(origin, destination, value)
-		puts 'TODO: implement Graph.add_arc(' + origin + ', ' + destination + ', ' + value + ')'
-	end
 
-  	def remove_arc(origin, destination)
-		puts 'TODO: implement Graph.remove_arc(' + origin + ', ' + destination + ')'
-	end
+	#  ███████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗    ██╗ █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ██╗     ██╗
+	#  ██╔════╝██║     ██╔═══██╗╚██╗ ██╔╝██╔══██╗      ██║    ██║██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██║
+	#  █████╗  ██║     ██║   ██║ ╚████╔╝ ██║  ██║█████╗██║ █╗ ██║███████║██████╔╝███████╗███████║███████║██║     ██║
+	#  ██╔══╝  ██║     ██║   ██║  ╚██╔╝  ██║  ██║╚════╝██║███╗██║██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║     ██║
+	#  ██║     ███████╗╚██████╔╝   ██║   ██████╔╝      ╚███╔███╔╝██║  ██║██║  ██║███████║██║  ██║██║  ██║███████╗███████╗
+	#  ╚═╝     ╚══════╝ ╚═════╝    ╚═╝   ╚═════╝        ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
 
-  	def arc_value(origin, destination)
-		puts 'TODO: implement Graph.arc_value(' + origin + ', ' + destination + ')'
+	# Implementation of the Floyd-Warshall algorithm, using native matrix.
+	#
+	def warshall
+		n = self.size
+		(0..n-1).each{ |i|
+			(0..n-1).each{ |x|
+				if self.arc_exists_private(x, i)
+					(0..n-1).each {|y|
+						if self.arc_exists_private(i, y)
+							self.add_arc_private(x, y)
+						end
+					}
+				end
+			}
+		}
 	end
 end
