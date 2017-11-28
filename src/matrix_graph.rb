@@ -6,7 +6,7 @@ class MatrixGraph < Graph
 	attr_accessor :matrix, :indexing
 
 	def initialize(size = nil)
-		@indexing = Indexing.new						# indexing represents
+		@indexing = Indexing.new						# indexing represents the indexing layer of the graph
 		@matrix = Matrix.zero(size.nil? ? 0 : size)			# matrix represents the adjacency matrix of the graph
 	end
 
@@ -82,18 +82,19 @@ class MatrixGraph < Graph
 
 	# TODO: move some methods to Node?
 
-	# Check if the node isn't nil and is a Node object
+	# Checks if the node isn't nil and is a Node object.
 	#
 	def is_node(node)
 		!node.nil? && node.class == Node
 	end
 
+	# Checks if the node exists in the current graph.
 	#
 	def is_node_in_graph(node)
 		indexing.has_element(node)
 	end
 
-	# Checks if a node is valid and exists in the current graph
+	# Checks if a node is valid and exists in the current graph.
 	#
 	def is_node_valid(node)
 		is_node(node) && is_node_in_graph(node)
@@ -111,7 +112,6 @@ class MatrixGraph < Graph
 	def add_node(node)
 		if is_node(node)
 			if indexing.add_element(node)
-				arcs = Set.new
 				if indexing.size > size
 					matrix.increment_size
 				end
@@ -122,6 +122,19 @@ class MatrixGraph < Graph
 			end
 		end
 		false
+	end
+
+	# Removes a node from the current graph.
+	# Throws an error if the node isn't invalid (non Node object or not in the graph).
+	#
+	def remove_node(node)
+		if is_node(node)
+			indexing.remove_element(node)
+			true
+		else
+			#raise ArgumentError, 'The node is invalid (non Node object or node isn\'t in the graph)'
+			false
+		end
 	end
 
 	# Returns the indegree value of the node in the current Graph
@@ -289,21 +302,64 @@ class MatrixGraph < Graph
 		end
 	end
 
-	# OK
+	# Returns the value of an Arc between origin and destination
+	# If a value (3rd argument) is specified, the Arc between origin and destination will have this new value.
+	#
 	def arc_value_private(origin_index, destination_index, value = nil)
-		origin_node = indexing.element_at(origin_index)
-		destination_node = indexing.element_at(destination_index)
-
-		if are_nodes_valid(origin_node, destination_node) # allowing to get/set only if the arc exist
+		if arc_exists_private(origin_index, destination_index) # allowing to get/set only if the arc exist
 			if value.nil?
 				return matrix[origin_index, destination_index]
 			else
-				matrix[origin_node, destination_node] = value
+				matrix[origin_index, destination_index] = value
 				return true
 			end
 		end
-		false
+		if value.nil?
+			-1
+		else
+			false
+		end
 	end
+
+
+
+
+	#   █████╗ ██╗      ██████╗  ██████╗ ██████╗ ██╗████████╗██╗  ██╗███╗   ███╗███████╗
+	#  ██╔══██╗██║     ██╔════╝ ██╔═══██╗██╔══██╗██║╚══██╔══╝██║  ██║████╗ ████║██╔════╝
+	#  ███████║██║     ██║  ███╗██║   ██║██████╔╝██║   ██║   ███████║██╔████╔██║███████╗
+	#  ██╔══██║██║     ██║   ██║██║   ██║██╔══██╗██║   ██║   ██╔══██║██║╚██╔╝██║╚════██║
+	#  ██║  ██║███████╗╚██████╔╝╚██████╔╝██║  ██║██║   ██║   ██║  ██║██║ ╚═╝ ██║███████║
+	#  ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+
+
+	# Implementation of the Floyd-Warshall algorithm, using native matrix.
+	#
+	def warshall_matrix_native
+		n = self.size
+		(0..n-1).each{ |k|
+			(0..n-1).each{ |i|
+				(0..n-1).each {|j|
+					unless self.matrix[i, j] == 1
+						if self.matrix[i, k] == 1 && self.matrix[k, j] == 1
+							self.matrix[i, j] = 1
+						end
+					end
+				}
+			}
+		}
+	end
+
+
+	# Implementation of the Foulkes algorithm, using native matrix.
+	#
+	def foulkes_matrix_native
+
+		ne = indexing.nodes
+		(1..n).each{ |i|
+
+		}
+	end
+
 
 
 
@@ -319,14 +375,14 @@ class MatrixGraph < Graph
 	def copy
 		n = size
 		g = MatrixGraph.new(n)
-		(0..n-1).each {|i|
+		(0..n-1).each { |i|
 			node_to_add = indexing.element_at(i)
 			unless node_to_add.nil?
 				g.add_node(node_to_add)
 			end
 		}
-		(0..n-1).each {|i|
-			(0..n-1).each {|j|
+		(0..n-1).each { |i|
+			(0..n-1).each { |j|
 				if arc_exists_private(i, j)
 					g.add_arc_private(i, j, arc_value_private(i, j))
 				end

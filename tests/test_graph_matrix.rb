@@ -62,6 +62,8 @@ class TestGraphMatrix < Minitest::Test
 	node_eight_neighbors= Hash.new
 
 
+
+
 	#  ██╗███╗   ██╗██╗████████╗
 	#  ██║████╗  ██║██║╚══██╔══╝
 	#  ██║██╔██╗ ██║██║   ██║
@@ -76,7 +78,6 @@ class TestGraphMatrix < Minitest::Test
 			graph_matrix = MatrixGraph.new
 			graph_matrix_size = MatrixGraph.new(size)
 		end
-
 
 		should 'the graph is created properly' do
 			assert_equal MatrixGraph, graph_matrix.class
@@ -129,12 +130,12 @@ class TestGraphMatrix < Minitest::Test
 	context 'B.1: defining some nodes' do
 
 		setup do
-			node_one = Node.new('a', false)
-			node_two = Node.new('b', false)
-			node_three = Node.new('c', false)
-			node_four = Node.new('d', false)
-			node_five = Node.new('e', false)
-			node_six = Node.new('a', false)
+			node_one = Node.new('a')
+			node_two = Node.new('b')
+			node_three = Node.new('c')
+			node_four = Node.new('d')
+			node_five = Node.new('e')
+			node_six = Node.new('a')
 			node_seven = nil
 			node_eight = String.new
 		end
@@ -270,27 +271,18 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_eight)
 		end
 
-		should 'is_null doesn\'t return true anymore' do
-			refute_equal true, graph_matrix.is_null
-		end
-
 		should 'is_null returns false because we added nodes' do
+			refute_equal true, graph_matrix.is_null
 			assert_equal false, graph_matrix.is_null
 		end
 
-		should 'size doesn\'t return 0 anymore' do
-			refute_equal 0, graph_matrix.size
-		end
-
 		should 'size now returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.size
 			assert_equal 5, graph_matrix.size
 		end
 
-		should 'nb_nodes doesn\'t return 0 anymore' do
-			refute_equal 0, graph_matrix.nb_nodes
-		end
-
 		should 'nb_nodes returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.nb_nodes
 			assert_equal 5, graph_matrix.nb_nodes
 		end
 
@@ -300,7 +292,7 @@ class TestGraphMatrix < Minitest::Test
 
 	end
 
-	context 'B.3: adding nodes to a MatrixGraph object' do
+	context 'B.3: checking indegree and outdegree mthods' do
 
 		should 'indegree works properly (returns 0 for every node (no arcs))' do
 			assert_equal 0, graph_matrix.indegree(node_one)
@@ -335,6 +327,283 @@ class TestGraphMatrix < Minitest::Test
 			assert_equal false, graph_matrix.add_node(node_four)
 			assert_equal false, graph_matrix.add_node(node_five)
 		end
+	end
+
+	context 'B.5: removing the nodes' do
+
+		setup do
+			@node_one_removing = graph_matrix.remove_node(node_one)
+			@node_two_removing = graph_matrix.remove_node(node_two)
+			@node_three_removing = graph_matrix.remove_node(node_three)
+			@node_four_removing = graph_matrix.remove_node(node_four)
+			@node_five_removing = graph_matrix.remove_node(node_five)
+			@node_seven_removing = graph_matrix.remove_node(node_seven)
+			@node_eight_removing = graph_matrix.remove_node(node_eight)
+		end
+
+		should 'remove_nodes works properly' do
+			assert_equal true, @node_one_removing
+			assert_equal true, @node_two_removing
+			assert_equal true, @node_three_removing
+			assert_equal true, @node_four_removing
+			assert_equal true, @node_five_removing
+			assert_equal false, @node_seven_removing
+			assert_equal false, @node_eight_removing
+		end
+
+		should 'is_node_in_graph works properly' do
+			assert_equal false, graph_matrix.is_node_in_graph(node_one)
+			assert_equal false, graph_matrix.is_node_in_graph(node_two)
+			assert_equal false, graph_matrix.is_node_in_graph(node_three)
+			assert_equal false, graph_matrix.is_node_in_graph(node_four)
+			assert_equal false, graph_matrix.is_node_in_graph(node_five)
+			assert_equal false, graph_matrix.is_node_in_graph(node_six)
+			assert_equal false, graph_matrix.is_node_in_graph(node_seven)
+			assert_equal false, graph_matrix.is_node_in_graph(node_eight)
+		end
+
+		should 'is_node_valid works properly' do
+			assert_equal false, graph_matrix.is_node_valid(node_one)
+			assert_equal false, graph_matrix.is_node_valid(node_two)
+			assert_equal false, graph_matrix.is_node_valid(node_three)
+			assert_equal false, graph_matrix.is_node_valid(node_four)
+			assert_equal false, graph_matrix.is_node_valid(node_five)
+			assert_equal false, graph_matrix.is_node_valid(node_six)
+			assert_equal false, graph_matrix.is_node_valid(node_seven)
+			assert_equal false, graph_matrix.is_node_valid(node_eight)
+		end
+
+		should 'the are_nodes_valid method works properly' do
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_eight)
+		end
+
+		should 'is_null returns false because we added nodes' do
+			refute_equal true, graph_matrix.is_null
+			assert_equal false, graph_matrix.is_null
+		end
+
+		should 'size now returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.size
+			assert_equal 5, graph_matrix.size
+		end
+
+		should 'nb_nodes returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.nb_nodes
+			assert_equal 5, graph_matrix.nb_nodes
+		end
+
+		should 'nb_arcs still returns 0' do
+			assert_equal 0, graph_matrix.nb_arcs
+		end
+	end
+
+
+	context 'B.6: adding back the nodes to the Graph for the next tests' do
+
+		setup do
+			@node_one_adding = graph_matrix.add_node(node_one)
+			@node_two_adding = graph_matrix.add_node(node_two)
+			@node_three_adding = graph_matrix.add_node(node_three)
+			@node_four_adding = graph_matrix.add_node(node_four)
+			@node_five_adding = graph_matrix.add_node(node_five)
+			@node_seven_adding = graph_matrix.add_node(node_seven)
+			@node_eight_adding = graph_matrix.add_node(node_eight)
+		end
+
+		should 'add_node works properly' do
+			assert_equal true, @node_one_adding
+			assert_equal true, @node_two_adding
+			assert_equal true, @node_three_adding
+			assert_equal true, @node_four_adding
+			assert_equal true, @node_five_adding
+			assert_equal false, @node_seven_adding
+			assert_equal false, @node_eight_adding
+		end
+
+		should 'is_node_in_graph works properly' do
+			assert_equal true, graph_matrix.is_node_in_graph(node_one)
+			assert_equal true, graph_matrix.is_node_in_graph(node_two)
+			assert_equal true, graph_matrix.is_node_in_graph(node_three)
+			assert_equal true, graph_matrix.is_node_in_graph(node_four)
+			assert_equal true, graph_matrix.is_node_in_graph(node_five)
+			assert_equal false, graph_matrix.is_node_in_graph(node_six)
+			assert_equal false, graph_matrix.is_node_in_graph(node_seven)
+			assert_equal false, graph_matrix.is_node_in_graph(node_eight)
+		end
+
+		should 'is_node_valid works properly' do
+			assert_equal true, graph_matrix.is_node_valid(node_one)
+			assert_equal true, graph_matrix.is_node_valid(node_two)
+			assert_equal true, graph_matrix.is_node_valid(node_three)
+			assert_equal true, graph_matrix.is_node_valid(node_four)
+			assert_equal true, graph_matrix.is_node_valid(node_five)
+			assert_equal false, graph_matrix.is_node_valid(node_six)
+			assert_equal false, graph_matrix.is_node_valid(node_seven)
+			assert_equal false, graph_matrix.is_node_valid(node_eight)
+		end
+
+		should 'the are_nodes_valid method works properly' do
+			assert_equal true, graph_matrix.are_nodes_valid(node_one, node_one)
+			assert_equal true, graph_matrix.are_nodes_valid(node_one, node_two)
+			assert_equal true, graph_matrix.are_nodes_valid(node_one, node_three)
+			assert_equal true, graph_matrix.are_nodes_valid(node_one, node_four)
+			assert_equal true, graph_matrix.are_nodes_valid(node_one, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_one, node_eight)
+
+			assert_equal true, graph_matrix.are_nodes_valid(node_two, node_one)
+			assert_equal true, graph_matrix.are_nodes_valid(node_two, node_two)
+			assert_equal true, graph_matrix.are_nodes_valid(node_two, node_three)
+			assert_equal true, graph_matrix.are_nodes_valid(node_two, node_four)
+			assert_equal true, graph_matrix.are_nodes_valid(node_two, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_two, node_eight)
+
+			assert_equal true, graph_matrix.are_nodes_valid(node_three, node_one)
+			assert_equal true, graph_matrix.are_nodes_valid(node_three, node_two)
+			assert_equal true, graph_matrix.are_nodes_valid(node_three, node_three)
+			assert_equal true, graph_matrix.are_nodes_valid(node_three, node_four)
+			assert_equal true, graph_matrix.are_nodes_valid(node_three, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_three, node_eight)
+
+			assert_equal true, graph_matrix.are_nodes_valid(node_four, node_one)
+			assert_equal true, graph_matrix.are_nodes_valid(node_four, node_two)
+			assert_equal true, graph_matrix.are_nodes_valid(node_four, node_three)
+			assert_equal true, graph_matrix.are_nodes_valid(node_four, node_four)
+			assert_equal true, graph_matrix.are_nodes_valid(node_four, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_four, node_eight)
+
+			assert_equal true, graph_matrix.are_nodes_valid(node_five, node_one)
+			assert_equal true, graph_matrix.are_nodes_valid(node_five, node_two)
+			assert_equal true, graph_matrix.are_nodes_valid(node_five, node_three)
+			assert_equal true, graph_matrix.are_nodes_valid(node_five, node_four)
+			assert_equal true, graph_matrix.are_nodes_valid(node_five, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_five, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_six, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_seven, node_eight)
+
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_one)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_two)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_three)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_four)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_five)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_six)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_seven)
+			assert_equal false, graph_matrix.are_nodes_valid(node_eight, node_eight)
+		end
+
+		should 'is_null returns false because we added nodes' do
+			refute_equal true, graph_matrix.is_null
+			assert_equal false, graph_matrix.is_null
+		end
+
+		should 'size now returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.size
+			assert_equal 5, graph_matrix.size
+		end
+
+		should 'nb_nodes returns 5 because we added 5 nodes' do
+			refute_equal 0, graph_matrix.nb_nodes
+			assert_equal 5, graph_matrix.nb_nodes
+		end
+
+		should 'nb_arcs still returns 0' do
+			assert_equal 0, graph_matrix.nb_arcs
+		end
 
 	end
 
@@ -354,9 +623,10 @@ class TestGraphMatrix < Minitest::Test
 		setup do
 			graph_matrix.add_arc(node_one, node_two)
 			graph_matrix.add_arc(node_two, node_two)
+			graph_matrix.add_arc(node_two, node_four)
 			graph_matrix.add_arc(node_four, node_two)
 			graph_matrix.add_arc(node_one, node_three)
-			graph_matrix.add_arc(node_two, node_four)
+
 			graph_matrix.add_arc(node_six, node_four)
 			graph_matrix.add_arc(node_seven, node_one)
 			graph_matrix.add_arc(node_two, node_eight)
@@ -364,117 +634,92 @@ class TestGraphMatrix < Minitest::Test
 		end
 
 		should 'arc_exists method works properly' do
+			assert_equal false, graph_matrix.arc_exists(node_one, node_one)
 			assert_equal true, graph_matrix.arc_exists(node_one, node_two)
-			assert_equal true, graph_matrix.arc_exists(node_two, node_two)
-			assert_equal true, graph_matrix.arc_exists(node_four, node_two)
 			assert_equal true, graph_matrix.arc_exists(node_one, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_two, node_one)
+			assert_equal true, graph_matrix.arc_exists(node_two, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_three)
 			assert_equal true, graph_matrix.arc_exists(node_two, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_three, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_four, node_one)
+			assert_equal true, graph_matrix.arc_exists(node_four, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_eight)
+
 			assert_equal false, graph_matrix.arc_exists(node_five, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_six, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_two)
 			assert_equal false, graph_matrix.arc_exists(node_six, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_eight)
 		end
 
 		should 'is_empty returns false because we added some arcs' do
-			assert_equal false, graph_matrix.is_empty
-		end
-
-		should 'nb_arcs doesn\'t 0 anymore' do
-			refute_equal 0, graph_matrix.nb_arcs
-		end
-
-		should 'nb_arcs returns 5 because we added 5 arcs' do
-			assert_equal 5, graph_matrix.nb_arcs
-		end
-
-	end
-
-	context 'C.2: Testing remove_arc.' do
-
-		setup do
-			graph_matrix.remove_arc(node_one, node_two)
-			graph_matrix.remove_arc(node_two, node_two)
-			graph_matrix.remove_arc(node_four, node_two)
-			graph_matrix.remove_arc(node_one, node_three)
-			graph_matrix.remove_arc(node_two, node_four)
-			graph_matrix.remove_arc(node_six, node_four)
-			graph_matrix.remove_arc(node_seven, node_one)
-			graph_matrix.remove_arc(node_two, node_eight)
-			graph_matrix.remove_arc(node_seven, node_eight)
-		end
-
-		should 'arc_exists method works properly' do
-			assert_equal false, graph_matrix.arc_exists(node_one, node_two)
-			assert_equal false, graph_matrix.arc_exists(node_two, node_two)
-			assert_equal false, graph_matrix.arc_exists(node_four, node_two)
-			assert_equal false, graph_matrix.arc_exists(node_one, node_three)
-			assert_equal false, graph_matrix.arc_exists(node_two, node_four)
-			assert_equal false, graph_matrix.arc_exists(node_five, node_one)
-			assert_equal false, graph_matrix.arc_exists(node_six, node_three)
-		end
-
-		should 'is_empty doesn\'t return false anymore because we removed the arcs' do
-			refute_equal false, graph_matrix.is_empty
-		end
-
-		should 'is_empty returns true because we removed the arcs' do
-			assert_equal true, graph_matrix.is_empty
-		end
-
-		should 'nb_arcs doesn\'t 5 anymore' do
-			refute_equal 5, graph_matrix.nb_arcs
-		end
-
-		should 'nb_arcs returns 0' do
-			assert_equal 0, graph_matrix.nb_arcs
-		end
-	end
-
-	context 'C.3: Testing add_arc_private and arc_exists_private methods.' do
-
-		setup do
-			node_one_index = graph_matrix.indexing.index(node_one)
-			node_two_index = graph_matrix.indexing.index(node_two)
-			node_three_index = graph_matrix.indexing.index(node_three)
-			node_four_index = graph_matrix.indexing.index(node_four)
-			node_five_index = graph_matrix.indexing.index(node_five)
-			node_six_index = graph_matrix.indexing.index(node_six)
-
-			graph_matrix.add_arc_private(node_one_index, node_two_index)
-			graph_matrix.add_arc_private(node_one_index, node_two_index)
-			graph_matrix.add_arc_private(node_two_index, node_two_index)
-			graph_matrix.add_arc_private(node_four_index, node_two_index)
-			graph_matrix.add_arc_private(node_one_index, node_three_index)
-			graph_matrix.add_arc_private(node_two_index, node_four_index)
-		end
-
-		should 'the arc_exists_private method works properly' do
-			assert_equal true, graph_matrix.arc_exists_private(node_one_index, node_two_index)
-			assert_equal true, graph_matrix.arc_exists_private(node_two_index, node_two_index)
-			assert_equal true, graph_matrix.arc_exists_private(node_four_index, node_two_index)
-			assert_equal true, graph_matrix.arc_exists_private(node_one_index, node_three_index)
-			assert_equal true, graph_matrix.arc_exists_private(node_two_index, node_four_index)
-			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_one_index)
-			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_three_index)
-		end
-
-		should 'is_empty doesn\'t returns true anymore because we added some arcs' do
 			refute_equal true, graph_matrix.is_empty
-		end
-
-		should 'is_empty returns false because we added some arcs' do
 			assert_equal false, graph_matrix.is_empty
 		end
 
-		should 'nb_arcs doesn\'t 0 anymore' do
-			refute_equal 0, graph_matrix.nb_arcs
-		end
-
 		should 'nb_arcs returns 5 because we added 5 arcs' do
+			refute_equal 0, graph_matrix.nb_arcs
 			assert_equal 5, graph_matrix.nb_arcs
 		end
 
 	end
 
-	context 'C.4: testing arc_value method.' do
+	context 'C.2: testing arc_value method.' do
 
 		setup do
 			graph_matrix.arc_value(node_one, node_two, 2)
@@ -687,7 +932,431 @@ class TestGraphMatrix < Minitest::Test
 
 	end
 
-	context 'C.5: testing indegree and outdegree methods.' do
+	context 'C.3: Testing remove_arc.' do
+
+		setup do
+			graph_matrix.remove_arc(node_one, node_two)
+			graph_matrix.remove_arc(node_two, node_two)
+			graph_matrix.remove_arc(node_four, node_two)
+			graph_matrix.remove_arc(node_one, node_three)
+			graph_matrix.remove_arc(node_two, node_four)
+			graph_matrix.remove_arc(node_six, node_four)
+			graph_matrix.remove_arc(node_seven, node_one)
+			graph_matrix.remove_arc(node_two, node_eight)
+			graph_matrix.remove_arc(node_seven, node_eight)
+		end
+
+		should 'arc_exists method works properly' do
+			assert_equal false, graph_matrix.arc_exists(node_one, node_one)
+			refute_equal true, graph_matrix.arc_exists(node_one, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_two)
+			refute_equal true, graph_matrix.arc_exists(node_one, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_one, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_two, node_one)
+			refute_equal true, graph_matrix.arc_exists(node_two, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_three)
+			refute_equal true, graph_matrix.arc_exists(node_two, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_two, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_three, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_three, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_four, node_one)
+			refute_equal true, graph_matrix.arc_exists(node_four, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_four, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_five, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_five, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_six, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_six, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_seven, node_eight)
+
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_one)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_two)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_three)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_four)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_five)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_six)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_seven)
+			assert_equal false, graph_matrix.arc_exists(node_eight, node_eight)
+		end
+
+		should 'is_empty returns true because we removed the arcs' do
+			refute_equal false, graph_matrix.is_empty
+			assert_equal true, graph_matrix.is_empty
+		end
+
+		should 'nb_arcs returns 0' do
+			refute_equal 5, graph_matrix.nb_arcs
+			assert_equal 0, graph_matrix.nb_arcs
+		end
+
+	end
+
+	context 'C.4: Testing add_arc_private and arc_exists_private methods.' do
+
+		setup do
+			node_one_index = graph_matrix.indexing.index(node_one)
+			node_two_index = graph_matrix.indexing.index(node_two)
+			node_three_index = graph_matrix.indexing.index(node_three)
+			node_four_index = graph_matrix.indexing.index(node_four)
+			node_five_index = graph_matrix.indexing.index(node_five)
+			node_six_index = graph_matrix.indexing.index(node_six)
+			node_seven_index = graph_matrix.indexing.index(node_seven)
+			node_eight_index = graph_matrix.indexing.index(node_eight)
+
+			graph_matrix.add_arc_private(node_one_index, node_two_index)
+			graph_matrix.add_arc_private(node_one_index, node_two_index)
+			graph_matrix.add_arc_private(node_two_index, node_two_index)
+			graph_matrix.add_arc_private(node_four_index, node_two_index)
+			graph_matrix.add_arc_private(node_one_index, node_three_index)
+			graph_matrix.add_arc_private(node_two_index, node_four_index)
+		end
+
+		should 'the arc_exists_private method works properly' do
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_one_index)
+			assert_equal true, graph_matrix.arc_exists_private(node_one_index, node_two_index)
+			assert_equal true, graph_matrix.arc_exists_private(node_one_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_one_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_one_index)
+			assert_equal true, graph_matrix.arc_exists_private(node_two_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_three_index)
+			assert_equal true, graph_matrix.arc_exists_private(node_two_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_two_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_one_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_three_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_one_index)
+			assert_equal true, graph_matrix.arc_exists_private(node_four_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_four_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_one_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_five_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_one_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_six_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_one_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_seven_index, node_eight_index)
+
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_one_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_two_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_three_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_four_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_five_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_six_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_seven_index)
+			assert_equal false, graph_matrix.arc_exists_private(node_eight_index, node_eight_index)
+		end
+
+		should 'is_empty returns false because we added some arcs' do
+			refute_equal true, graph_matrix.is_empty
+			assert_equal false, graph_matrix.is_empty
+		end
+
+		should 'nb_arcs returns 5 because we added 5 arcs' do
+			refute_equal 0, graph_matrix.nb_arcs
+			assert_equal 5, graph_matrix.nb_arcs
+		end
+
+	end
+
+	context 'C.5: testing arc_value_private method.' do
+
+		setup do
+			graph_matrix.arc_value_private(node_one_index, node_two_index, 2)
+			graph_matrix.arc_value_private(node_one_index, node_three_index, 5)
+			graph_matrix.arc_value_private(node_two_index, node_two_index, 3)
+			graph_matrix.arc_value_private(node_two_index, node_four_index, 6)
+			graph_matrix.arc_value_private(node_four_index, node_two_index, 4)
+
+			graph_matrix.arc_value_private(node_one_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_one_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_one_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_one_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_one_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_one_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_two_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_two_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_two_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_two_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_two_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_two_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_three_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_two_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_three_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_four_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_four_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_five_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_two_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_five_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_six_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_two_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_six_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_seven_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_two_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_seven_index, node_eight_index, 99)
+
+			graph_matrix.arc_value_private(node_eight_index, node_one_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_two_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_three_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_four_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_five_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_six_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_seven_index, 99)
+			graph_matrix.arc_value_private(node_eight_index, node_eight_index, 99)
+
+		end
+
+		should 'getting arc_value_private works properly' do
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal 2, graph_matrix.arc_value_private(node_one_index, node_two_index)
+			assert_equal 5, graph_matrix.arc_value_private(node_one_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_one_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_one_index, node_eight_index)
+
+			refute_equal -99, graph_matrix.arc_value_private(node_two_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_one_index)
+			assert_equal 3, graph_matrix.arc_value_private(node_two_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_two_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_three_index)
+			assert_equal 6, graph_matrix.arc_value_private(node_two_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_two_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_two_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_two_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_two_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_two_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_one_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_two_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_three_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_three_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_one_index)
+			assert_equal 4, graph_matrix.arc_value_private(node_four_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_four_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_four_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_one_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_two_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_five_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_five_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_one_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_two_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_six_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_six_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_one_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_two_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_seven_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_seven_index, node_eight_index)
+
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_one_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_one_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_two_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_two_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_three_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_three_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_four_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_four_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_five_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_five_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_six_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_six_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_seven_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_seven_index)
+			refute_equal 99, graph_matrix.arc_value_private(node_eight_index, node_eight_index)
+			assert_equal -1, graph_matrix.arc_value_private(node_eight_index, node_eight_index)
+		end
+
+	end
+
+	context 'C.6: testing indegree and outdegree methods.' do
 
 		should 'indegree works properly.' do
 			assert_equal 0, graph_matrix.indegree(node_one)
@@ -793,22 +1462,57 @@ class TestGraphMatrix < Minitest::Test
 		should 'neighbors works properly.' do
 			assert_equal 2, graph_matrix.neighbors(node_one).length
 			assert_equal node_one_neighbors, graph_matrix.neighbors(node_one)
+
 			assert_equal 3, graph_matrix.neighbors(node_two).length
 			assert_equal node_two_neighbors, graph_matrix.neighbors(node_two)
+
 			assert_equal 1, graph_matrix.neighbors(node_three).length
 			assert_equal node_three_neighbors, graph_matrix.neighbors(node_three)
+
 			assert_equal 1, graph_matrix.neighbors(node_four).length
 			assert_equal node_four_neighbors, graph_matrix.neighbors(node_four)
+
 			assert_equal 0, graph_matrix.neighbors(node_five).length
 			assert_equal node_five_neighbors, graph_matrix.neighbors(node_five)
+
 			assert_equal 0, graph_matrix.neighbors(node_six).length
 			assert_equal node_six_neighbors, graph_matrix.neighbors(node_six)
+
 			assert_equal 0, graph_matrix.neighbors(node_seven).length
 			assert_equal node_seven_neighbors, graph_matrix.neighbors(node_seven)
+
 			assert_equal 0, graph_matrix.neighbors(node_eight).length
 			assert_equal node_eight_neighbors, graph_matrix.neighbors(node_eight)
 		end
 
+	end
+
+
+
+
+	#  ███████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗    ██╗ █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ██╗     ██╗
+	#  ██╔════╝██║     ██╔═══██╗╚██╗ ██╔╝██╔══██╗      ██║    ██║██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██║
+	#  █████╗  ██║     ██║   ██║ ╚████╔╝ ██║  ██║█████╗██║ █╗ ██║███████║██████╔╝███████╗███████║███████║██║     ██║
+	#  ██╔══╝  ██║     ██║   ██║  ╚██╔╝  ██║  ██║╚════╝██║███╗██║██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║     ██║
+	#  ██║     ███████╗╚██████╔╝   ██║   ██████╔╝      ╚███╔███╔╝██║  ██║██║  ██║███████║██║  ██║██║  ██║███████╗███████╗
+	#  ╚═╝     ╚══════╝ ╚═════╝    ╚═╝   ╚═════╝        ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+
+
+	context 'D.1: testing the Floyd-Warshall algorithm.' do
+
+		setup do
+			graph_matrix.arc_value(node_one, node_two, 1)
+			graph_matrix.arc_value(node_one, node_three, 1)
+			graph_matrix.arc_value(node_two, node_two, 1)
+			graph_matrix.arc_value(node_two, node_four, 1)
+			graph_matrix.arc_value(node_four, node_two, 1)
+			graph_matrix.see
+			graph_matrix.warshall
+			graph_matrix.see
+		end
+
+		should 'warshall alg. works properly' do
+		end
 	end
 
 end
