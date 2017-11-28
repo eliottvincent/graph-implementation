@@ -29,14 +29,11 @@ class Indexing
 
 
 	def add_element(node)
-		#puts '>>>>>Indexing.add_element()>>>>> starting: ' + @nodes.to_a.map(&:inspect).to_s
 		if has_element(node)
 			return false
 		end
 		@nodes[node.name] = node
-		#puts '>>>>>Indexing.add_element()>>>>> element added: ' + @nodes.to_a.map(&:inspect).to_s
 		true
-		#puts '>>>>>Indexing.add_element()>>>>> element already exist: ' + @nodes.to_a.map(&:inspect).to_s
 	end
 
 
@@ -48,8 +45,6 @@ class Indexing
 		true
 	end
 
-
-	# TODO: move this to Node class?
 	def is_node_valid(node)
 		!node.nil? && node.class == Node
 	end
@@ -75,5 +70,11 @@ class Indexing
 		nodes[nodes.keys[i]]
 	end
 
-	# private :has_element_private
+	# Imports elements from another indexing object.
+	#
+  	def import(indexing_to_import)
+		indexing_to_import.nodes.each_with_index {|(key, value), index|
+			add_element(value)
+		}
+	end
 end

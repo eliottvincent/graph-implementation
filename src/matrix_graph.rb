@@ -80,8 +80,6 @@ class MatrixGraph < Graph
 	#  ██║ ╚████║╚██████╔╝██████╔╝███████╗
 	#  ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
 
-	# TODO: move some methods to Node?
-
 	# Checks if the node isn't nil and is a Node object.
 	#
 	def is_node(node)
@@ -354,9 +352,29 @@ class MatrixGraph < Graph
 	#
 	def foulkes_matrix_native
 
-		ne = indexing.nodes
-		(1..n).each{ |i|
+		# duplicating indexing so we can manipulate it without affecting the graph
+		cfc = Hash.new
+		ne = Indexing.new
+		ne.import(indexing)
 
+		n = self.size
+		(0..n-1).each{ |i|
+			node_i = ne.element_at(i)
+			if ne.has_element(node_i)
+				cfc[node_i.name] = node_i
+				ne.remove_element(node_i)
+				if arc_exists_private(i, i)
+					(i+1..n).each{|j|
+						if arc_exists_private(i, j) && arc_exists_private(j, i)
+							node_j = indexing.element_at(j)
+							cfc[node_j.name] = node_j
+							ne.remove_element(node_j)
+						end
+					}
+				end
+			p cfc
+			cfc = Hash.new
+			end
 		}
 	end
 
@@ -395,22 +413,6 @@ class MatrixGraph < Graph
 		puts matrix.dump(@indexing.nodes.empty? ? nil : @indexing.nodes)
 	end
 
-
-
-
-	#   █████╗ ██╗      ██████╗  ██████╗ ██████╗ ██╗████████╗██╗  ██╗███╗   ███╗███████╗
-	#  ██╔══██╗██║     ██╔════╝ ██╔═══██╗██╔══██╗██║╚══██╔══╝██║  ██║████╗ ████║██╔════╝
-	#  ███████║██║     ██║  ███╗██║   ██║██████╔╝██║   ██║   ███████║██╔████╔██║███████╗
-	#  ██╔══██║██║     ██║   ██║██║   ██║██╔══██╗██║   ██║   ██╔══██║██║╚██╔╝██║╚════██║
-	#  ██║  ██║███████╗╚██████╔╝╚██████╔╝██║  ██║██║   ██║   ██║  ██║██║ ╚═╝ ██║███████║
-	#  ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
-
-	def warshall
-
-	end
-
-
-
 end
 
 
@@ -423,13 +425,12 @@ class Matrix
 	# there is no method to pretty print a matrix
 	#
 	def dump(elements = nil)
-		# p self
 		str = ""
 		space = " "
 		double_space = space + space
 		(0...self.row_size).each {|i|
 			if i == 0
-				str << "↗" << space << double_space
+				str << space << "↗" << space << double_space
 
 				# if elements has been specified, we output its content
 				unless elements.nil?
@@ -441,7 +442,11 @@ class Matrix
 			end
 
 			if !elements.nil? && !elements.values[i].nil?
-				str << elements.values[i].name.to_s << double_space
+				if elements.values[i].name.to_s.size < 2
+					str << space << elements.values[i].name.to_s << double_space
+				else
+					str << elements.values[i].name.to_s << double_space
+				end
 			else
 				str << double_space << space
 			end
