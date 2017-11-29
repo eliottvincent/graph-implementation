@@ -13,7 +13,6 @@ class Indexing
 		@nodes.length
 	end
 
-
 	# check if the node specified in parameter is in the @nodes Hash
 	#
 	def has_element(node)

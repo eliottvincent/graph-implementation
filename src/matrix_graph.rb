@@ -3,11 +3,11 @@ require_relative'indexing'
 
 class MatrixGraph < Graph
 
-	attr_accessor :matrix, :indexing
+	attr_accessor :matrix
 
 	def initialize(size = nil)
-		@indexing = Indexing.new						# indexing represents the indexing layer of the graph
-		@matrix = Matrix.zero(size.nil? ? 0 : size)			# matrix represents the adjacency matrix of the graph
+		super(size)	# calling the parent constructor
+		@matrix = Matrix.zero(size.nil? ? 0 : size)	# matrix represents the adjacency matrix of the graph
 	end
 
 
@@ -20,54 +20,10 @@ class MatrixGraph < Graph
 	#  ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║
 	#   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝
 
-
-	# Tells if a graph is null or not
-	# A graph is considered as null when it has 0 nodes AND 0 arcs
-	#
-	def is_null
-		if nb_nodes.eql?(0)
-			return true
-		end
-		false
-	end
-
-	# Tells if a graph is empty or not
-	# A graph is considered as null when it has n nodes AND 0 arcs
-	#
-	def is_empty
-		if nb_arcs.eql?(0)
-			return true
-		end
-		false
-	end
-
 	# Returns the size of the adjacency matrix representing the graph.
 	#
 	def size
 		matrix.row_size
-	end
-
-	# Returns the number of nodes added to the graph.
-	# Returns 0 if no nodes at all.
-	#
-	def nb_nodes
-		indexing.size
-	end
-
-	# Returns the number of arcs added to the graph.
-	# Returns 0 if no arcs at all.
-	#
-	def nb_arcs
-		n = size
-		nb = 0
-		(0..n-1).each {|i|
-			(0..n-1).each {|j|
-				if arc_exists_private(i, j)
-					nb += 1
-				end
-			}
-		}
-		nb
 	end
 
 
@@ -79,30 +35,6 @@ class MatrixGraph < Graph
 	#  ██║╚██╗██║██║   ██║██║  ██║██╔══╝
 	#  ██║ ╚████║╚██████╔╝██████╔╝███████╗
 	#  ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
-
-	# Checks if the node isn't nil and is a Node object.
-	#
-	def is_node(node)
-		!node.nil? && node.class == Node
-	end
-
-	# Checks if the node exists in the current graph.
-	#
-	def is_node_in_graph(node)
-		indexing.has_element(node)
-	end
-
-	# Checks if a node is valid and exists in the current graph.
-	#
-	def is_node_valid(node)
-		is_node(node) && is_node_in_graph(node)
-	end
-
-	# Calls the is_node_valid() method on two nodes
-	#
-	def are_nodes_valid(n1, n2)
-		is_node_valid(n1) && is_node_valid(n2)
-	end
 
 	# Adds a node to the current graph.
 	# Throws an error if the node has already been added to the graph
@@ -120,91 +52,6 @@ class MatrixGraph < Graph
 			end
 		end
 		false
-	end
-
-	# Removes a node from the current graph.
-	# Throws an error if the node isn't invalid (non Node object or not in the graph).
-	#
-	def remove_node(node)
-		if is_node(node)
-			indexing.remove_element(node)
-			true
-		else
-			#raise ArgumentError, 'The node is invalid (non Node object or node isn\'t in the graph)'
-			false
-		end
-	end
-
-	# Returns the indegree value of the node in the current Graph
-	# The indegree is the number of nodes reaching the specified node
-	#
-	def indegree(node)
-		indegree = 0
-		if is_node_valid(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(i, ni)
-					indegree += 1
-				end
-			}
-			return indegree
-		end
-		-1
-	end
-
-	# Returns the outdegree value of the node in the current Graph
-	# The outdegree is the number of nodes reached by the specified node (through an arc)
-	#
-	def outdegree(node)
-		outdegree = 0
-		if is_node_valid(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(ni, i)
-					outdegree += 1
-				end
-			}
-			return outdegree
-		end
-		-1
-	end
-
-	# Returns a hash populated with all nodes reaching the specified node (through an arc)
-	#
-	def predecessors(node)
-		predecessors = Hash.new
-		if is_node_valid(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(i, ni)
-					predecessor = indexing.element_at(i)
-					predecessors[predecessor.name] = predecessor
-				end
-			}
-		end
-		predecessors
-	end
-
-	# Returns a hash populated with all nodes reached by the specified node (through an arc)
-	#
-	def successors(node)
-		successors = Hash.new
-		if is_node_valid(node)
-			ni = indexing.index(node)
-			(0..size - 1).each {|i|
-				if arc_exists_private(ni, i)
-					successor = indexing.element_at(i)
-					successors[successor.name] = successor
-				end
-			}
-		end
-		successors
-	end
-
-	# Returns the neighbors, which are all the nodes the specified node is connected to.
-	#
-	def neighbors(node)
-		predecessors(node).merge(successors(node))
 	end
 
 
@@ -329,11 +176,12 @@ class MatrixGraph < Graph
 	#  ██║  ██║███████╗╚██████╔╝╚██████╔╝██║  ██║██║   ██║   ██║  ██║██║ ╚═╝ ██║███████║
 	#  ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
 
-
-	# Implementation of the Floyd-Warshall algorithm, using native matrix.
+	# Implementation of the Floyd-Warshall algorithm, using native matrix representation.
 	#
 	def warshall_matrix_native
-		n = self.size
+
+		n = self.size	# n is the number of nodes of the graph
+
 		(0..n-1).each{ |k|
 			(0..n-1).each{ |i|
 				(0..n-1).each {|j|
@@ -345,6 +193,9 @@ class MatrixGraph < Graph
 				}
 			}
 		}
+		puts 'Warshall done: '
+		puts ''
+	  	self.see
 	end
 
 
@@ -352,28 +203,29 @@ class MatrixGraph < Graph
 	#
 	def foulkes_matrix_native
 
-		# duplicating indexing so we can manipulate it without affecting the graph
-		cfc = Hash.new
-		ne = Indexing.new
-		ne.import(indexing)
+		scc = Hash.new	# scc is an Hash representing a strongly connected component (cfc in french)
+		ne = getNE	# ne represents the list of nodes that are still not explored
+		n = self.size	# n is the number of nodes of the graph
 
-		n = self.size
 		(0..n-1).each{ |i|
-			node_i = ne.element_at(i)
-			if ne.has_element(node_i)
-				cfc[node_i.name] = node_i
-				ne.remove_element(node_i)
-				if arc_exists_private(i, i)
-					(i+1..n).each{|j|
-						if arc_exists_private(i, j) && arc_exists_private(j, i)
-							node_j = indexing.element_at(j)
-							cfc[node_j.name] = node_j
-							ne.remove_element(node_j)
+			node_i = ne.element_at(i)	# getting the node at the current index
+			if ne.has_element(node_i)	# if the node is still non explored...
+				scc[node_i.name] = node_i	# ...then we add it to the scc Hash
+				ne.remove_element(node_i)	# ...and we remove it from the list of non explored nodes
+				if self.matrix[i, i] == 1	# if there is an arc between node_i and node_i...
+					(i+1..n).each{|j|	# ...then we loop on the nodes of the grap
+
+						# if there is an arc between nodes at i and node at j...
+						# ...and an arc between nodes at j and node at i...
+						if self.matrix[i, j] == 1 && self.matrix[j, i] == 1
+							node_j = indexing.element_at(j)	# ...then we get the node at the j index
+							scc[node_j.name] = node_j	# we add it to tje scc Hash
+							ne.remove_element(node_j)	# and we remove it from the list of non explored nodes
 						end
 					}
 				end
-			p cfc
-			cfc = Hash.new
+			p scc	# displaying the scc in the console
+			scc = Hash.new	# emptying the scc Hash for the next iteration
 			end
 		}
 	end
@@ -389,26 +241,6 @@ class MatrixGraph < Graph
 	#  ╚██████╔╝   ██║   ██║███████╗███████║
 	#   ╚═════╝    ╚═╝   ╚═╝╚══════╝╚══════╝
 
-	# OK
-	def copy
-		n = size
-		g = MatrixGraph.new(n)
-		(0..n-1).each { |i|
-			node_to_add = indexing.element_at(i)
-			unless node_to_add.nil?
-				g.add_node(node_to_add)
-			end
-		}
-		(0..n-1).each { |i|
-			(0..n-1).each { |j|
-				if arc_exists_private(i, j)
-					g.add_arc_private(i, j, arc_value_private(i, j))
-				end
-			}
-		}
-		g
-	end
-
 	def see
 		puts matrix.dump(@indexing.nodes.empty? ? nil : @indexing.nodes)
 	end
@@ -418,7 +250,7 @@ end
 
 
 
-# overriding the Matrix class defining the Matrix object in Ruby 2.4.2
+# Overriding the Matrix class defining the Matrix object in Ruby 2.4.2
 #
 class Matrix
 
