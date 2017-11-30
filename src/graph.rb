@@ -16,32 +16,6 @@ class Graph
 	#   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝
 
 
-	# Tells if a graph is null or not
-	# A graph is considered as null when it has 0 nodes AND 0 arcs
-	#
-	def is_null
-		if nb_nodes.eql?(0)
-			return true
-		end
-		false
-	end
-
-	# Tells if a graph is empty or not
-	# A graph is considered as null when it has n nodes AND 0 arcs
-	#
-	def is_empty
-		if nb_arcs.eql?(0)
-			return true
-		end
-		false
-	end
-
-	# Returns the size of the data type representing the graph.
-	#
-	def size
-
-	end
-
 	# Returns the number of nodes added to the graph.
 	# Returns 0 if no nodes at all.
 	#
@@ -63,6 +37,26 @@ class Graph
 			}
 		}
 		nb
+	end
+
+	# Tells if a graph is null or not
+	# A graph is considered null when it has 0 nodes AND 0 arcs
+	#
+	def is_null
+		if nb_nodes.eql?(0)
+			return true
+		end
+		false
+	end
+
+	# Tells if a graph is empty or not
+	# A graph is considered empty when it has n nodes AND 0 arcs
+	#
+	def is_empty
+		if nb_arcs.eql?(0)
+			return true
+		end
+		false
 	end
 
 
@@ -99,8 +93,35 @@ class Graph
 		is_node_valid(n1) && is_node_valid(n2)
 	end
 
+	# Tells if a node is marked or not.
+	#
+	def is_node_marked(node)
+		if is_node_valid(node)
+			node.marked
+		end
+	end
+
+	# Sets a node as marked.
+	#
+	def mark_node(node)
+		if is_node_valid(node)
+			node.marked = true
+			true
+		end
+		false
+	end
+
+	# Sets all nodes of the graph as non marked.
+	#
+	def unmark_all_nodes
+		n = size
+		(0..n-1).each {|i|
+			node = indexing.element_at(i)
+			node.marked = false
+		}
+	end
+
 	# Adds a node to the current graph.
-	# Throws an error if the node has already been added to the graph
 	#
 	def add_node(node)
 
@@ -125,7 +146,7 @@ class Graph
 	def indegree(node)
 		indegree = 0
 		if is_node_valid(node)
-			ni = indexing.index(node)
+			ni = indexing.index_of(node)
 			(0..size - 1).each {|i|
 				if arc_exists_private(i, ni)
 					indegree += 1
@@ -142,7 +163,7 @@ class Graph
 	def outdegree(node)
 		outdegree = 0
 		if is_node_valid(node)
-			ni = indexing.index(node)
+			ni = indexing.index_of(node)
 			(0..size - 1).each {|i|
 				if arc_exists_private(ni, i)
 					outdegree += 1
@@ -158,7 +179,7 @@ class Graph
 	def predecessors(node)
 		predecessors = Hash.new
 		if is_node_valid(node)
-			ni = indexing.index(node)
+			ni = indexing.index_of(node)
 			(0..size - 1).each {|i|
 				if arc_exists_private(i, ni)
 					predecessor = indexing.element_at(i)
@@ -174,7 +195,7 @@ class Graph
 	def successors(node)
 		successors = Hash.new
 		if is_node_valid(node)
-			ni = indexing.index(node)
+			ni = indexing.index_of(node)
 			(0..size - 1).each {|i|
 				if arc_exists_private(ni, i)
 					successor = indexing.element_at(i)
@@ -193,7 +214,8 @@ class Graph
 
 
 
-	#   █████╗ ██████╗  ██████╗
+
+	#	█████╗ ██████╗  ██████╗
 	#  ██╔══██╗██╔══██╗██╔════╝
 	#  ███████║██████╔╝██║
 	#  ██╔══██║██╔══██╗██║
@@ -250,31 +272,34 @@ class Graph
 
 
 
-	#  ███████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗    ██╗ █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ██╗     ██╗
-	#  ██╔════╝██║     ██╔═══██╗╚██╗ ██╔╝██╔══██╗      ██║    ██║██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██║
-	#  █████╗  ██║     ██║   ██║ ╚████╔╝ ██║  ██║█████╗██║ █╗ ██║███████║██████╔╝███████╗███████║███████║██║     ██║
-	#  ██╔══╝  ██║     ██║   ██║  ╚██╔╝  ██║  ██║╚════╝██║███╗██║██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║     ██║
-	#  ██║     ███████╗╚██████╔╝   ██║   ██████╔╝      ╚███╔███╔╝██║  ██║██║  ██║███████║██║  ██║██║  ██║███████╗███████╗
-	#  ╚═╝     ╚══════╝ ╚═════╝    ╚═╝   ╚═════╝        ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+	#  ██╗    ██╗ █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ██╗     ██╗
+	#  ██║    ██║██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██║
+	#  ██║ █╗ ██║███████║██████╔╝███████╗███████║███████║██║     ██║
+	#  ██║███╗██║██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║     ██║
+	#  ╚███╔███╔╝██║  ██║██║  ██║███████║██║  ██║██║  ██║███████╗███████╗
+	#   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
 
 	# Implementation of the Floyd-Warshall algorithm.
 	# This implementation uses high level methods that are specific to each Graph type (matrix, list, etc.)
 	#
 	def warshall
 
-		n = self.size	# n is the number of nodes of the graph
+		n = size	# n is the number of nodes of the graph
 
-		(0..n-1).each{ |i|
-			(0..n-1).each{ |x|
-				if self.arc_exists_private(x, i)
-					(0..n-1).each {|y|
-						if self.arc_exists_private(i, y)
-							self.add_arc_private(x, y)
+		(0..n-1).each{ |i|	# for each node of the graph
+			(0..n-1).each{ |x|	# for each node of the graph
+				if arc_exists_private(x, i)	# if there is an arc between nodes at x and i
+					(0..n-1).each {|y|	# for each node of the graph
+						if arc_exists_private(i, y)	# if there is an arc between nodes at i and y...
+							add_arc_private(x, y)	# ...then we add an arc between x and y
 						end
 					}
 				end
 			}
 		}
+		puts 'Warshall done: '
+		puts ''
+		see
 	end
 
 
@@ -292,23 +317,22 @@ class Graph
 	def foulkes
 
 		scc = Hash.new	# scc is an Hash representing a strongly connected component (cfc in french)
-		ne = getNE	# ne represents the list of nodes that are still not explored
-		n = self.size	# ne is the number of nodes of the graph
+		n = size	# ne is the number of nodes of the graph
 
-		(0..n-1).each{ |i|
-			node_i = ne.element_at(i)	# getting the node at the current index
-			if ne.has_element(node_i)	# if the node is still non explored...
+		(0..n-1).each{ |i|	# for each node of the graph
+			node_i = indexing.element_at(i)	# getting the node at the current index
+			unless is_node_marked(node_i) # if the node is still non explored...
 				scc[node_i.name] = node_i	# ...then we add it to the scc Hash
-				ne.remove_element(node_i)	# ...and we remove it from the list of non explored nodes
-				if arc_exists_private(i, i)	# if there is an arc between node_i and node_i...
-					(i+1..n).each{|j|	# ...then we loop on the nodes of the grap
+				mark_node(node_i) # ...and we mark it as explored
+				if arc_exists(node_i, node_i)	# if there is an arc between node_i and node_i...
+					(i+1..n).each{|j|	# ...then we loop on the nodes of the graph
 
 						# if there is an arc between nodes at i and node at j...
 						# ...and an arc between nodes at j and node at i...
 						if arc_exists_private(i, j) && arc_exists_private(j, i)
 							node_j = indexing.element_at(j)	# ...then we get the node at the j index
-							scc[node_j.name] = node_j	# we add it to tje scc Hash
-							ne.remove_element(node_j)	# and we remove it from the list of non explored nodes
+							scc[node_j.name] = node_j	# we add it to the scc Hash
+							mark_node(node_j) # and we mark it
 						end
 					}
 				end
@@ -316,6 +340,7 @@ class Graph
 				scc = Hash.new	# emptying the scc Hash for the next iteration
 			end
 		}
+		unmark_all_nodes	# removing the mark on all nodes
 	end
 
 
@@ -347,15 +372,10 @@ class Graph
 		g
 	end
 
+	# Outputs the content of the graph.
+	#
 	def see
 
 	end
 
-	# Duplicating indexing so we can manipulate it without affecting the graph
-	#
-	def getNE
-		ne = Indexing.new
-		ne.import(indexing)
-		ne
-	end
 end

@@ -37,12 +37,11 @@ class MatrixGraph < Graph
 	#  ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
 
 	# Adds a node to the current graph.
-	# Throws an error if the node has already been added to the graph
 	#
 	def add_node(node)
 		if is_node(node)
 			if indexing.add_element(node)
-				if indexing.size > size
+				if nb_nodes > size
 					matrix.increment_size
 				end
 				return true
@@ -69,8 +68,8 @@ class MatrixGraph < Graph
 	#
 	def add_arc(origin, destination, value = nil)
 		if are_nodes_valid(origin, destination)
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
+			oi = indexing.index_of(origin)
+			di = indexing.index_of(destination)
 			matrix[oi, di] = value.nil? ? 1 : value
 			return true
 		end
@@ -95,8 +94,8 @@ class MatrixGraph < Graph
 	#
 	def arc_exists(origin, destination)
 		if are_nodes_valid(origin, destination)
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
+			oi = indexing.index_of(origin)
+			di = indexing.index_of(destination)
 			return matrix[oi, di] != 0
 		end
 		false
@@ -118,8 +117,8 @@ class MatrixGraph < Graph
 	#
 	def remove_arc(origin, destination)
 		if arc_exists(origin, destination)
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
+			oi = indexing.index_of(origin)
+			di = indexing.index_of(destination)
 			matrix[oi, di] = 0
 			return true
 		end
@@ -131,8 +130,8 @@ class MatrixGraph < Graph
 	#
 	def arc_value(origin, destination, value = nil)
 		if arc_exists(origin, destination)	# allowing to get/set only if the arc exist
-			oi = indexing.index(origin)
-			di = indexing.index(destination)
+			oi = indexing.index_of(origin)
+			di = indexing.index_of(destination)
 			if value.nil?
 				return matrix[oi, di]
 			else
@@ -169,67 +168,76 @@ class MatrixGraph < Graph
 
 
 
-	#   █████╗ ██╗      ██████╗  ██████╗ ██████╗ ██╗████████╗██╗  ██╗███╗   ███╗███████╗
-	#  ██╔══██╗██║     ██╔════╝ ██╔═══██╗██╔══██╗██║╚══██╔══╝██║  ██║████╗ ████║██╔════╝
-	#  ███████║██║     ██║  ███╗██║   ██║██████╔╝██║   ██║   ███████║██╔████╔██║███████╗
-	#  ██╔══██║██║     ██║   ██║██║   ██║██╔══██╗██║   ██║   ██╔══██║██║╚██╔╝██║╚════██║
-	#  ██║  ██║███████╗╚██████╔╝╚██████╔╝██║  ██║██║   ██║   ██║  ██║██║ ╚═╝ ██║███████║
-	#  ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+	#  ██╗    ██╗ █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ██╗     ██╗
+	#  ██║    ██║██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██║
+	#  ██║ █╗ ██║███████║██████╔╝███████╗███████║███████║██║     ██║
+	#  ██║███╗██║██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║     ██║
+	#  ╚███╔███╔╝██║  ██║██║  ██║███████║██║  ██║██║  ██║███████╗███████╗
+	#   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
 
 	# Implementation of the Floyd-Warshall algorithm, using native matrix representation.
 	#
-	def warshall_matrix_native
+	def warshall
 
-		n = self.size	# n is the number of nodes of the graph
+		n = size	# n is the number of nodes of the graph
 
-		(0..n-1).each{ |k|
-			(0..n-1).each{ |i|
-				(0..n-1).each {|j|
-					unless self.matrix[i, j] == 1
-						if self.matrix[i, k] == 1 && self.matrix[k, j] == 1
-							self.matrix[i, j] = 1
+		(0..n-1).each{ |i|	# for each node of the graph
+			(0..n-1).each{ |x|	# for each node of the graph
+				if matrix[x, i] == 1	# if there is an arc between nodes at x and i
+					(0..n-1).each {|y|	# for each node of the graph
+						if matrix[i, y] == 1	# if there is an arc between nodes at i and y...
+							matrix[x, y] = 1	# ...then we add an arc between x and y
 						end
-					end
-				}
+					}
+				end
 			}
 		}
 		puts 'Warshall done: '
 		puts ''
-	  	self.see
+		see
 	end
 
+
+
+
+	#  ███████╗ ██████╗ ██╗   ██╗██╗     ██╗  ██╗███████╗███████╗
+	#  ██╔════╝██╔═══██╗██║   ██║██║     ██║ ██╔╝██╔════╝██╔════╝
+	#  █████╗  ██║   ██║██║   ██║██║     █████╔╝ █████╗  ███████╗
+	#  ██╔══╝  ██║   ██║██║   ██║██║     ██╔═██╗ ██╔══╝  ╚════██║
+	#  ██║     ╚██████╔╝╚██████╔╝███████╗██║  ██╗███████╗███████║
+	#  ╚═╝      ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝
+	#
 
 	# Implementation of the Foulkes algorithm, using native matrix.
 	#
-	def foulkes_matrix_native
+	def foulkes
 
 		scc = Hash.new	# scc is an Hash representing a strongly connected component (cfc in french)
-		ne = getNE	# ne represents the list of nodes that are still not explored
-		n = self.size	# n is the number of nodes of the graph
+		n = size	# n is the number of nodes of the graph
 
 		(0..n-1).each{ |i|
-			node_i = ne.element_at(i)	# getting the node at the current index
-			if ne.has_element(node_i)	# if the node is still non explored...
-				scc[node_i.name] = node_i	# ...then we add it to the scc Hash
-				ne.remove_element(node_i)	# ...and we remove it from the list of non explored nodes
-				if self.matrix[i, i] == 1	# if there is an arc between node_i and node_i...
-					(i+1..n).each{|j|	# ...then we loop on the nodes of the grap
+			node_i = indexing.element_at(i)	# getting the node at the current index
+			unless is_node_marked(node_i) # if the node is still non explored...
+				scc[node_i.name] = node_i # ...then we add it to the scc Hash
+				mark_node(node_i) # ...and we mark it as explored
+				if matrix[i, i] == 1 # if there is an arc between node_i and node_i...
+					(i+1..n).each {|j| # ...then we loop on the nodes of the graph
 
 						# if there is an arc between nodes at i and node at j...
 						# ...and an arc between nodes at j and node at i...
-						if self.matrix[i, j] == 1 && self.matrix[j, i] == 1
-							node_j = indexing.element_at(j)	# ...then we get the node at the j index
-							scc[node_j.name] = node_j	# we add it to tje scc Hash
-							ne.remove_element(node_j)	# and we remove it from the list of non explored nodes
+						if matrix[i, j] == 1 && matrix[j, i] == 1
+							node_j = indexing.element_at(j) # ...then we get the node at the j index
+							scc[node_j.name] = node_j # we add it to the scc Hash
+							mark_node(node_j) # and we mark it
 						end
 					}
 				end
-			p scc	# displaying the scc in the console
-			scc = Hash.new	# emptying the scc Hash for the next iteration
+				p scc # displaying the scc in the console
+				scc = Hash.new # emptying the scc Hash for the next iteration
 			end
 		}
+		unmark_all_nodes	# removing the mark on all nodes
 	end
-
 
 
 
@@ -241,6 +249,8 @@ class MatrixGraph < Graph
 	#  ╚██████╔╝   ██║   ██║███████╗███████║
 	#   ╚═════╝    ╚═╝   ╚═╝╚══════╝╚══════╝
 
+	# Outputs the content of the graph.
+	#
 	def see
 		puts matrix.dump(@indexing.nodes.empty? ? nil : @indexing.nodes)
 	end
@@ -250,11 +260,11 @@ end
 
 
 
-# Overriding the Matrix class defining the Matrix object in Ruby 2.4.2
+# Overriding the Ruby Matrix object.
 #
 class Matrix
 
-	# there is no method to pretty print a matrix
+	# There is no method to pretty print a matrix so I created my own
 	#
 	def dump(elements = nil)
 		str = ""
@@ -291,20 +301,20 @@ class Matrix
 		str << "\n"
 	end
 
-	# the Matrix class is immutable, however I want to be able to write:
+	# The Ruby Matrix object is immutable, however I want to be able to write:
 	#   m[i,j] = v
 	#
 	def []=(i, j, v)
 		@rows[i][j] = v
 	end
 
-	# the Matrix class doesn't let developers resize a matrix
+	# The Matrix object doesn't let me to resize a matrix.
 	#
 	def increment_size
 		incremented_size = row_count + 1
 
-		@rows = Array.new(incremented_size){Array.new(incremented_size, 0)}
-		@row_count = incremented_size
-		@column_count = incremented_size
+		@rows = Array.new(incremented_size){Array.new(incremented_size, 0)}	# adding a row and a column to the current Matrix
+		@row_count = incremented_size	# incrementing the counter of rows
+		@column_count = incremented_size	# incrementing the counter of columns
 	end
 end

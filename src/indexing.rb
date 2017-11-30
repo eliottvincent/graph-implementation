@@ -8,15 +8,16 @@ class Indexing
 		@nodes = Hash.new
 	end
 
-
+	# Returns the size of the nodes Hash
+	#
 	def size
 		@nodes.length
 	end
 
-	# check if the node specified in parameter is in the @nodes Hash
+	# Checks if the node specified in parameter is in the @nodes Hash
 	#
 	def has_element(node)
-		if is_node_valid(node)
+		if is_node(node)
 			@nodes.each_with_index { |(key,value), index|
 				if key == node.name && value.eql?(node)
 					return true
@@ -26,7 +27,8 @@ class Indexing
 		false
 	end
 
-
+	# Adds a node in the @nodes Hash.
+	#
 	def add_element(node)
 		if has_element(node)
 			return false
@@ -35,7 +37,8 @@ class Indexing
 		true
 	end
 
-
+	# Deletes the node from @nodes.
+	#
 	def remove_element(node)
 		unless has_element(node)
 			return false
@@ -44,15 +47,16 @@ class Indexing
 		true
 	end
 
-	def is_node_valid(node)
+	# Checks if the node isn't nil and is a Node object.
+	#
+	def is_node(node)
 		!node.nil? && node.class == Node
 	end
 
-	# returns the index of the node specified in parameter
-	# the node is searched by it's name (node.name) since @nodes is a Hash
+	# Returns the index of the node specified in parameter
 	#
-	def index(node)
-		if is_node_valid(node)
+	def index_of(node)
+		if is_node(node)
 			@nodes.each_with_index {|(key, value), index|
 				if key == node.name && value.eql?(node)
 					return index
@@ -63,17 +67,9 @@ class Indexing
 		-1
 	end
 
-	# returns the node at the specified index
+	# Returns the node at the specified index
 	#
 	def element_at(i)
 		nodes[nodes.keys[i]]
-	end
-
-	# Imports elements from another indexing object.
-	#
-  	def import(indexing_to_import)
-		indexing_to_import.nodes.each_with_index {|(key, value), index|
-			add_element(value)
-		}
 	end
 end

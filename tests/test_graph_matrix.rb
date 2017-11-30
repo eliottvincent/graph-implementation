@@ -1040,14 +1040,14 @@ class TestGraphMatrix < Minitest::Test
 	context 'C.4: Testing add_arc_private and arc_exists_private methods.' do
 
 		setup do
-			node_one_index = graph_matrix.indexing.index(node_one)
-			node_two_index = graph_matrix.indexing.index(node_two)
-			node_three_index = graph_matrix.indexing.index(node_three)
-			node_four_index = graph_matrix.indexing.index(node_four)
-			node_five_index = graph_matrix.indexing.index(node_five)
-			node_six_index = graph_matrix.indexing.index(node_six)
-			node_seven_index = graph_matrix.indexing.index(node_seven)
-			node_eight_index = graph_matrix.indexing.index(node_eight)
+			node_one_index = graph_matrix.indexing.index_of(node_one)
+			node_two_index = graph_matrix.indexing.index_of(node_two)
+			node_three_index = graph_matrix.indexing.index_of(node_three)
+			node_four_index = graph_matrix.indexing.index_of(node_four)
+			node_five_index = graph_matrix.indexing.index_of(node_five)
+			node_six_index = graph_matrix.indexing.index_of(node_six)
+			node_seven_index = graph_matrix.indexing.index_of(node_seven)
+			node_eight_index = graph_matrix.indexing.index_of(node_eight)
 
 			graph_matrix.add_arc_private(node_one_index, node_two_index)
 			graph_matrix.add_arc_private(node_one_index, node_two_index)
